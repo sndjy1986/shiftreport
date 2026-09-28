@@ -83,7 +83,7 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [showToast, setShowToast] = useState<string | null>(null);
   const [showLinksModal, setShowLinksModal] = useState(false);
-  const [showPreviewDrawer, setShowPreviewDrawer] = useState(false);
+
   
   // Custom Box Prompt Label Color & Size Configuration synced with ThemeSelectorModal
   const [labelStyle, setLabelStyle] = useState<LabelStyleConfig>(getSavedLabelStyle);
@@ -369,114 +369,9 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
     return reportParts.join("\n");
   };
 
-  const buildHtmlReport = () => {
-    const parts: string[] = [];
-    const dataStyle = 'font-family: Calibri, Helvetica, Arial, sans-serif; font-size: 13pt; mso-ansi-font-size: 13.0pt; margin: 0 0 2pt 0; line-height: 1.4; color: #000000;';
-    const headerStyle = 'font-family: Calibri, Helvetica, Arial, sans-serif; font-size: 20pt; mso-ansi-font-size: 20.0pt; mso-bidi-font-size: 20.0pt; font-weight: bold; text-decoration: underline; margin-top: 14pt; margin-bottom: 3pt; padding: 0; color: #000000; line-height: 1.2;';
 
-    const addHtmlSection = (title: string, content: string | string[], isTabular: boolean = false) => {
-      if (parts.length > 0) {
-        parts.push('<p style="margin: 0; line-height: 12pt; font-size: 12pt;">&nbsp;</p>');
-      }
 
-      // 5-layer size guarantee: h2 + font size="5" + span 20pt + inline CSS + mso-ansi-font-size
-      parts.push(`<h2 style="${headerStyle}"><u><strong><font size="5" style="font-size: 20pt; mso-ansi-font-size: 20.0pt;"><span style="font-size: 20pt; font-family: Calibri, Helvetica, Arial, sans-serif; mso-ansi-font-size: 20.0pt;">**${title}**</span></font></strong></u></h2>`);
-      
-      if (Array.isArray(content)) {
-        content.forEach(line => {
-          const colonIndex = line.indexOf(': ');
-          if (colonIndex !== -1) {
-            const label = line.substring(0, colonIndex);
-            const value = line.substring(colonIndex + 2);
-            parts.push(`<p style="${dataStyle}"><font size="3" style="font-size: 13pt; mso-ansi-font-size: 13.0pt;"><strong>${label}:</strong> ${value}</font></p>`);
-          } else {
-            parts.push(`<p style="${dataStyle}"><font size="3" style="font-size: 13pt; mso-ansi-font-size: 13.0pt;">${line}</font></p>`);
-          }
-        });
-      } else {
-        const text = (typeof content === 'string' ? content : "");
-        if (isTabular && text.trim()) {
-          const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
-          if (lines.length > 0) {
-            const rows = lines.map(line => line.split(/\t|\s{2,}/).map(cell => cell.trim()));
-            const widths = ["20%", "14%", "13%", "34%", "19%"];
-
-            let table = `<table style="border-collapse: collapse; width: auto; max-width: 100%; border: 1px solid #000; font-family: Calibri, Helvetica, Arial, sans-serif; font-size: 12pt; margin-top: 4px;">`;
-            rows.forEach((row, rowIndex) => {
-              table += `<tr>`;
-              for (let i = 0; i < 5; i++) {
-                const cell = row[i] || "";
-                const cellStyle = `border: 1px solid #000; padding: 4px 8px; text-align: left; width: ${widths[i] || "auto"}; min-width: 50px; font-family: Calibri, Helvetica, Arial, sans-serif; font-size: 12pt;`;
-                if (rowIndex === 0) {
-                  table += `<th style="${cellStyle} background-color: #D9D9D9; font-weight: bold;">${cell}</th>`;
-                } else {
-                  table += `<td style="${cellStyle}">${cell}</td>`;
-                }
-              }
-              table += `</tr>`;
-            });
-            table += `</table>`;
-            parts.push(table);
-          } else {
-            parts.push(`<p style="${dataStyle}"><font size="3" style="font-size: 13pt; mso-ansi-font-size: 13.0pt;">None</font></p>`);
-          }
-        } else if (text) {
-          const lines = text.split(/\r?\n/);
-          lines.forEach(line => {
-            const formattedLine = line.replace(/ /g, "&nbsp;") || "&nbsp;";
-            parts.push(`<p style="${dataStyle}"><font size="3" style="font-size: 13pt; mso-ansi-font-size: 13.0pt;">${formattedLine}</font></p>`);
-          });
-        } else {
-          parts.push(`<p style="${dataStyle}"><font size="3" style="font-size: 13pt; mso-ansi-font-size: 13.0pt;">None</font></p>`);
-        }
-      }
-    };
-
-    addHtmlSection("Info", [
-      `Name: ${data.name || "N/A"}`,
-      `Date: ${formatDateForDisplay(data.date)}`,
-      `Shift: ${data.shift}`
-    ]);
-
-    addHtmlSection("Radio Assignments", [
-      `Ch.1: ${data.channel1 || "N/A"}`,
-      `Ch.2: ${data.channel2 || "N/A"}`,
-      `Third Person: ${data.thirdPerson || "N/A"}`
-    ]);
-
-    addHtmlSection("Supervisors", [
-      `ALSSUP: ${data.alssup || "N/A"}`,
-      `MEDSUP: ${data.medsup || "N/A"}`
-    ]);
-
-    addHtmlSection("Zulu On Call (After 1700)", [
-      `Primary: ${data.zuluPrimary || "N/A"}`,
-      `Secondary: ${data.zuluSecondary || "N/A"}`
-    ]);
-
-    addHtmlSection("Avail Trucks", [
-      `911 Trucks: ${data.truck911 || "0"}`,
-      `GT Trucks: ${data.truckGT || "0"}`,
-      `ALS Transport Trucks: ${data.truckALS || "None"}`,
-      `County QRV: ${data.truckCountyQRV || "None"}`
-    ]);
-
-    addHtmlSection("Late Trucks", data.lateTrucks);
-    addHtmlSection("Out of Chute", data.outOfChute);
-    addHtmlSection("Other Issues", data.issues);
-
-    if (data.pasteNotes) {
-      addHtmlSection("Roster/Time Up", data.pasteNotes, true);
-    }
-
-    if (data.otherEvents) {
-      addHtmlSection("Other Events", data.otherEvents);
-    }
-
-    return parts.join("\n");
-  };
-
-  const copyReportToClipboard = async (plainReport: string, htmlReport: string) => {
+  const copyReportToClipboard = async (plainReport: string) => {
     let copied = false;
 
     // Primary: Async Clipboard API with text/plain only
@@ -522,10 +417,9 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
 
   const handleSend = async () => {
     const plainReport = buildReport();
-    const htmlReport = buildHtmlReport();
 
     try {
-      await copyReportToClipboard(plainReport, htmlReport);
+      await copyReportToClipboard(plainReport);
       setShowToast("Report Copied to Clipboard! Launching Email...");
     } catch (err) {
       console.error("Clipboard error:", err);
@@ -611,15 +505,6 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                    Links
                  </button>
 
-                 <button
-                   type="button"
-                   onClick={() => setShowPreviewDrawer(true)}
-                   className="px-4 py-2.5 bg-black/40 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 transition-all shadow-md cursor-pointer"
-                   title="View Rich Text Report Preview"
-                 >
-                   <Eye className="w-3.5 h-3.5 text-indigo-400" />
-                   Preview
-                 </button>
               </div>
             </header>
 
@@ -928,14 +813,7 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                        <option value="End of Shift Report" className="bg-slate-900">End Of Shift Report</option>
                      </select>
                    </div>
-                   <button 
-                     type="button"
-                     onClick={() => setShowPreviewDrawer(true)}
-                     className="px-5 h-[48px] bg-black/40 hover:bg-white/10 border border-white/10 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2.5 cursor-pointer"
-                   >
-                     <Eye className="w-4 h-4 text-indigo-400" />
-                     <span>Preview</span>
-                   </button>
+
                    <button 
                      type="button"
                      onClick={handleSend}
@@ -961,74 +839,6 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
           <span className="text-sm tracking-tight">{showToast}</span>
         </div>
       )}
-
-      {/* Live Report Preview Drawer */}
-      <div className={`fixed inset-0 z-[120] transition-opacity duration-300 ${showPreviewDrawer ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-        <div 
-          onClick={() => setShowPreviewDrawer(false)} 
-          className="absolute inset-0 bg-black/80 backdrop-blur-md" 
-        />
-        <aside 
-          className={`absolute top-0 right-0 h-full w-full max-w-xl bg-slate-950/95 border-l border-white/10 shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${showPreviewDrawer ? 'translate-x-0' : 'translate-x-full'}`}
-        >
-          <div className="p-6 sm:p-8 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
-            <div>
-              <h3 className="text-2xl font-black text-white tracking-tight flex items-center gap-3 uppercase">
-                <Eye className="w-6 h-6 text-indigo-400" />
-                Report Preview
-              </h3>
-              <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest font-black">
-                Rich Text Snapshot • Formatted for Email
-              </p>
-            </div>
-            <button 
-              onClick={() => setShowPreviewDrawer(false)}
-              className="p-2.5 hover:bg-white/10 rounded-2xl transition-colors text-slate-400 hover:text-white cursor-pointer"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-          
-          <div className="flex-1 p-6 sm:p-8 overflow-y-auto scrollbar-thin bg-black/20">
-            <div className="bg-white rounded-2xl p-8 text-black shadow-inner min-h-full">
-              <div 
-                className="max-w-none text-black selection:bg-indigo-500/20"
-                style={{ fontFamily: 'Calibri, sans-serif' }}
-                dangerouslySetInnerHTML={{ __html: buildHtmlReport() }} 
-              />
-            </div>
-          </div>
-
-          <div className="p-6 sm:p-8 border-t border-white/10 bg-white/[0.02] space-y-6">
-            <button 
-              onClick={async () => {
-                try {
-                  const plainContent = buildReport();
-                  const htmlContent = buildHtmlReport();
-                  await copyReportToClipboard(plainContent, htmlContent);
-                  setShowToast("Rich HTML & Text copied! Ready to paste into email.");
-                } catch (e) {
-                  console.error("Copy error:", e);
-                  setShowToast("Failed to access clipboard");
-                }
-              }}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 transition-all shadow-xl shadow-indigo-600/30 active:scale-[0.98] cursor-pointer"
-            >
-              <Clipboard className="w-4 h-4" /> Copy Email Rich Text Format
-            </button>
-            
-            <div className="pt-4 border-t border-white/10 space-y-3">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Essential Resources</h4>
-              <nav className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <ExternalLinkItem href="https://drive.google.com/file/d/137BOp88NqFXFuoYJ-VBIR0n-xGfOq4_U/view?usp=drive_link" label="Coroner On Call" meta="Google Drive Access" />
-                <ExternalLinkItem href="https://drive.google.com/file/d/1YRmQRgyxRjqlGWiBLsNaiYhmssqDeCet/view" label="911 SOG'S County" meta="Regulation Handbook" />
-                <ExternalLinkItem href="https://drive.google.com/file/d/15IL2nx3foN5V4L2ue6OBAp8kmZkpWzma/view" label="Employee Handbook" meta="HR Policies" />
-                <ExternalLinkItem href="https://docs.google.com/spreadsheets/d/1ywTY-EVDLJYfPsxKPDGLdNJStJ63W-_yYS-Y4CU31Bw/edit" label="Shift Calendar" meta="Live Roster Sync" />
-              </nav>
-            </div>
-          </div>
-        </aside>
-      </div>
 
       {/* Links Modal */}
       {showLinksModal && (
