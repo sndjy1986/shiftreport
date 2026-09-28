@@ -866,7 +866,7 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                 <ExternalLinkItem href="https://drive.google.com/drive/folders/1pe1rJBNOYTTFuPa0yk3TMCnWd7v0pZ_W?usp=sharing" label="Shift Report" meta="Google Sheets" />
                 <ExternalLinkItem href="https://priorityambulance-my.sharepoint.com/:x:/g/personal/jsanders_medshore_com/IQB5-AkCs8b6TazKysmNYYE9AT53juYy9or_8_XJYYTCZNQ?e=KHSLnvhttpsAFFdocs.google.comFspreadsheetsFdF1gNp6K6y-nKFmrdt6BxvId68WqCh2MCWqE6irUOpWJDoFeditFgidD496939607#gidD496939607" label="Issue Tracker" meta="Issue Tracker" />
                 <ExternalLinkItem href="https://scheduling.esosuite.net/Login.aspx?db=priorityambulance" label="ESO" meta="ESO Login" />
-                <ExternalLinkItem href="https://example.com/weather" label="Weather Center" meta="NOAA / NWS" />
+                <ExternalLinkItem href="https://docs.google.com/spreadsheets/d/1-4Uwh00g4orCaOQoOrLIcRkamAhdxrBNhVVOt2IEOoY/edit?gid=534085027#gid=534085027" label="Truck Up Times" meta="TruckTimes" />
               </div>
             </div>
             <div className="p-6 sm:p-8 bg-white/[0.02] flex justify-end gap-4 border-t border-white/10">
