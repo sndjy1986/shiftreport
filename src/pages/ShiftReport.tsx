@@ -88,12 +88,6 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
   // Custom Box Prompt Label Color & Size Configuration synced with ThemeSelectorModal
   const [labelStyle, setLabelStyle] = useState<LabelStyleConfig>(getSavedLabelStyle);
 
-  const [dispatch1, setDispatch1] = useState({ cfs: '', code: '', units: '' });
-  const [dispatch2, setDispatch2] = useState({ cfs: '', code: '', units: '' });
-
-  const [fr911_1, setFr911_1] = useState({ cfs: '', unitsAdded: '', callDrop: '' });
-  const [fr911_2, setFr911_2] = useState({ cfs: '', unitsAdded: '', callDrop: '' });
-
   const parseTime = (timeStr: string) => {
     if (!timeStr) return null;
     const [h, m, s = 0] = timeStr.split(':').map(Number);
@@ -125,8 +119,8 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
     return `${m}m ${sec}s`;
   };
 
-  const diff1 = getDiff(dispatch1);
-  const diff2 = getDiff(dispatch2);
+  const diff1 = getDiff(data.dispatch1 || INITIAL_DATA.dispatch1);
+  const diff2 = getDiff(data.dispatch2 || INITIAL_DATA.dispatch2);
   
   let averageDiff: number | null = null;
   if (diff1 !== null && diff2 !== null) {
@@ -137,8 +131,8 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
     averageDiff = diff2;
   }
 
-  const frDiff1 = getFrDiff(fr911_1);
-  const frDiff2 = getFrDiff(fr911_2);
+  const frDiff1 = getFrDiff(data.fr911_1 || INITIAL_DATA.fr911_1);
+  const frDiff2 = getFrDiff(data.fr911_2 || INITIAL_DATA.fr911_2);
   
   let frAverageDiff: number | null = null;
   if (frDiff1 !== null && frDiff2 !== null) {
@@ -429,6 +423,11 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
       if (!cfs && !t1 && !t2) return null;
       return `${label} - CFS: ${cfs || 'N/A'} | Times: ${t1 || '--'} to ${t2 || '--'} | Diff: ${diff}`;
     };
+
+    const dispatch1 = data.dispatch1 || INITIAL_DATA.dispatch1;
+    const dispatch2 = data.dispatch2 || INITIAL_DATA.dispatch2;
+    const fr911_1 = data.fr911_1 || INITIAL_DATA.fr911_1;
+    const fr911_2 = data.fr911_2 || INITIAL_DATA.fr911_2;
 
     const dispatchLines = [
       formatTimeRow("Check 1", dispatch1.cfs, dispatch1.code, dispatch1.units, formatSecs(diff1)),
@@ -884,8 +883,8 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                   
                   <div className="space-y-4">
                     {[
-                      { state: dispatch1, setter: setDispatch1, diff: diff1 },
-                      { state: dispatch2, setter: setDispatch2, diff: diff2 }
+                      { state: data.dispatch1 || INITIAL_DATA.dispatch1, setter: (val: any) => setData(p => ({ ...p, dispatch1: val })), diff: diff1 },
+                      { state: data.dispatch2 || INITIAL_DATA.dispatch2, setter: (val: any) => setData(p => ({ ...p, dispatch2: val })), diff: diff2 }
                     ].map((item, idx) => (
                       <div 
                         key={idx}
@@ -950,8 +949,8 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                   
                   <div className="space-y-4">
                     {[
-                      { state: fr911_1, setter: setFr911_1, diff: frDiff1 },
-                      { state: fr911_2, setter: setFr911_2, diff: frDiff2 }
+                      { state: data.fr911_1 || INITIAL_DATA.fr911_1, setter: (val: any) => setData(p => ({ ...p, fr911_1: val })), diff: frDiff1 },
+                      { state: data.fr911_2 || INITIAL_DATA.fr911_2, setter: (val: any) => setData(p => ({ ...p, fr911_2: val })), diff: frDiff2 }
                     ].map((item, idx) => (
                       <div 
                         key={idx}

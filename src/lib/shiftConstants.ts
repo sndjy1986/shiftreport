@@ -92,6 +92,10 @@ export type ShiftReportData = {
   issues: string;
   pasteNotes: string;
   otherEvents: string;
+  dispatch1: { cfs: string; code: string; units: string };
+  dispatch2: { cfs: string; code: string; units: string };
+  fr911_1: { cfs: string; unitsAdded: string; callDrop: string };
+  fr911_2: { cfs: string; unitsAdded: string; callDrop: string };
 };
 
 export const DEFAULT_ZULU_OPTIONS: string[] = [
@@ -128,5 +132,9 @@ export const INITIAL_DATA: ShiftReportData = {
   outOfChute: "",
   issues: "",
   pasteNotes: "",
-  otherEvents: ""
+  otherEvents: "",
+  dispatch1: { cfs: '', code: '', units: '' },
+  dispatch2: { cfs: '', code: '', units: '' },
+  fr911_1: { cfs: '', unitsAdded: '', callDrop: '' },
+  fr911_2: { cfs: '', unitsAdded: '', callDrop: '' }
 };
