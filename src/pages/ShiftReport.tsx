@@ -91,6 +91,9 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
   const [dispatch1, setDispatch1] = useState({ cfs: '', code: '', units: '' });
   const [dispatch2, setDispatch2] = useState({ cfs: '', code: '', units: '' });
 
+  const [fr911_1, setFr911_1] = useState({ cfs: '', unitsAdded: '', callDrop: '' });
+  const [fr911_2, setFr911_2] = useState({ cfs: '', unitsAdded: '', callDrop: '' });
+
   const parseTime = (timeStr: string) => {
     if (!timeStr) return null;
     const [h, m, s = 0] = timeStr.split(':').map(Number);
@@ -102,6 +105,15 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
     const unitsTime = parseTime(d.units);
     if (codeTime === null || unitsTime === null) return null;
     let diff = unitsTime - codeTime;
+    if (diff < 0) diff += 24 * 3600;
+    return diff;
+  };
+
+  const getFrDiff = (d: { unitsAdded: string, callDrop: string }) => {
+    const time1 = parseTime(d.unitsAdded);
+    const time2 = parseTime(d.callDrop);
+    if (time1 === null || time2 === null) return null;
+    let diff = time2 - time1;
     if (diff < 0) diff += 24 * 3600;
     return diff;
   };
@@ -123,6 +135,18 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
     averageDiff = diff1;
   } else if (diff2 !== null) {
     averageDiff = diff2;
+  }
+
+  const frDiff1 = getFrDiff(fr911_1);
+  const frDiff2 = getFrDiff(fr911_2);
+  
+  let frAverageDiff: number | null = null;
+  if (frDiff1 !== null && frDiff2 !== null) {
+    frAverageDiff = (frDiff1 + frDiff2) / 2;
+  } else if (frDiff1 !== null) {
+    frAverageDiff = frDiff1;
+  } else if (frDiff2 !== null) {
+    frAverageDiff = frDiff2;
   }
 
   useEffect(() => {
@@ -821,72 +845,140 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                 </section>
               )}
 
-              {/* Dispatch Time Checks */}
-              <section className="tactical-card p-6 sm:p-8 space-y-6 group">
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                   <h2 
-                     style={{ color: labelStyle.color }}
-                     className="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 transition-colors"
-                   >
-                      <Clock className="w-4 h-4" /> Random Dispatch Time Checks
-                   </h2>
-                </div>
-                
-                <div className="space-y-4">
-                  {[
-                    { state: dispatch1, setter: setDispatch1, diff: diff1 },
-                    { state: dispatch2, setter: setDispatch2, diff: diff2 }
-                  ].map((item, idx) => (
-                    <div 
-                      key={idx}
-                      className="p-4 rounded border border-white/10 bg-[#0b0f17]/50 flex flex-wrap gap-4 items-end"
-                    >
-                      <div className="flex flex-col flex-1 min-w-[120px]">
-                        <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-1">CFS Number</label>
-                        <input 
-                          type="text" 
-                          value={item.state.cfs} 
-                          onChange={e => item.setter({ ...item.state, cfs: e.target.value })} 
-                          className="w-full tactical-input p-2.5 text-xs font-mono text-white bg-[#0b0f17]"
-                        />
-                      </div>
-                      <div className="flex flex-col flex-1 min-w-[120px]">
-                        <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-1">Code Added</label>
-                        <input 
-                          type="time" 
-                          step="1"
-                          value={item.state.code} 
-                          onChange={e => item.setter({ ...item.state, code: e.target.value })} 
-                          className="w-full tactical-input p-2.5 text-xs font-mono text-white bg-[#0b0f17]"
-                        />
-                      </div>
-                      <div className="flex flex-col flex-1 min-w-[120px]">
-                        <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-1">Units Added</label>
-                        <input 
-                          type="time" 
-                          step="1"
-                          value={item.state.units} 
-                          onChange={e => item.setter({ ...item.state, units: e.target.value })} 
-                          className="w-full tactical-input p-2.5 text-xs font-mono text-white bg-[#0b0f17]"
-                        />
-                      </div>
-                      <div className="flex flex-col min-w-[100px]">
-                        <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-1">Difference</label>
-                        <div className="px-3 py-2 font-bold text-lg text-indigo-400">
-                          {formatSecs(item.diff)}
+              {/* Dispatch & FR911 Time Checks */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+                <section className="tactical-card p-4 sm:p-6 space-y-4 group">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                     <h2 
+                       style={{ color: labelStyle.color }}
+                       className="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 transition-colors"
+                     >
+                        <Clock className="w-4 h-4" /> Random Dispatch Time Checks
+                     </h2>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {[
+                      { state: dispatch1, setter: setDispatch1, diff: diff1 },
+                      { state: dispatch2, setter: setDispatch2, diff: diff2 }
+                    ].map((item, idx) => (
+                      <div 
+                        key={idx}
+                        className="p-3 rounded border border-white/10 bg-[#0b0f17]/50 flex flex-wrap gap-3 items-end"
+                      >
+                        <div className="flex flex-col flex-1 min-w-[80px]">
+                          <label className="text-[9px] uppercase tracking-widest text-slate-400 font-black mb-1">CFS Number</label>
+                          <input 
+                            type="text" 
+                            value={item.state.cfs} 
+                            onChange={e => item.setter({ ...item.state, cfs: e.target.value })} 
+                            className="w-full tactical-input p-2 text-xs font-mono text-white bg-[#0b0f17]"
+                          />
+                        </div>
+                        <div className="flex flex-col flex-1 min-w-[80px]">
+                          <label className="text-[9px] uppercase tracking-widest text-slate-400 font-black mb-1">Code Added</label>
+                          <input 
+                            type="time" 
+                            step="1"
+                            value={item.state.code} 
+                            onChange={e => item.setter({ ...item.state, code: e.target.value })} 
+                            className="w-full tactical-input p-2 text-xs font-mono text-white bg-[#0b0f17]"
+                          />
+                        </div>
+                        <div className="flex flex-col flex-1 min-w-[80px]">
+                          <label className="text-[9px] uppercase tracking-widest text-slate-400 font-black mb-1">Units Added</label>
+                          <input 
+                            type="time" 
+                            step="1"
+                            value={item.state.units} 
+                            onChange={e => item.setter({ ...item.state, units: e.target.value })} 
+                            className="w-full tactical-input p-2 text-xs font-mono text-white bg-[#0b0f17]"
+                          />
+                        </div>
+                        <div className="flex flex-col min-w-[80px]">
+                          <label className="text-[9px] uppercase tracking-widest text-slate-400 font-black mb-1">Difference</label>
+                          <div className="px-2 py-1.5 font-bold text-base text-indigo-400">
+                            {formatSecs(item.diff)}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                  
-                  <div className="p-4 rounded border border-white/10 bg-black/40 flex justify-end items-center gap-4">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Average:</div>
-                    <div className="text-xl font-black text-indigo-400">
-                      {formatSecs(averageDiff)}
+                    ))}
+                    
+                    <div className="p-3 rounded border border-white/10 bg-black/40 flex justify-end items-center gap-4">
+                      <div className="text-[9px] font-black uppercase tracking-widest text-slate-400">Average:</div>
+                      <div className="text-lg font-black text-indigo-400">
+                        {formatSecs(averageDiff)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </section>
+                </section>
+
+                <section className="tactical-card p-4 sm:p-6 space-y-4 group">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                     <h2 
+                       style={{ color: labelStyle.color }}
+                       className="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 transition-colors"
+                     >
+                        <Clock className="w-4 h-4" /> FR911 Times
+                     </h2>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {[
+                      { state: fr911_1, setter: setFr911_1, diff: frDiff1 },
+                      { state: fr911_2, setter: setFr911_2, diff: frDiff2 }
+                    ].map((item, idx) => (
+                      <div 
+                        key={idx}
+                        className="p-3 rounded border border-white/10 bg-[#0b0f17]/50 flex flex-wrap gap-3 items-end"
+                      >
+                        <div className="flex flex-col flex-1 min-w-[80px]">
+                          <label className="text-[9px] uppercase tracking-widest text-slate-400 font-black mb-1">CFS Number</label>
+                          <input 
+                            type="text" 
+                            value={item.state.cfs} 
+                            onChange={e => item.setter({ ...item.state, cfs: e.target.value })} 
+                            className="w-full tactical-input p-2 text-xs font-mono text-white bg-[#0b0f17]"
+                          />
+                        </div>
+                        <div className="flex flex-col flex-1 min-w-[80px]">
+                          <label className="text-[9px] uppercase tracking-widest text-slate-400 font-black mb-1">Units Added</label>
+                          <input 
+                            type="time" 
+                            step="1"
+                            value={item.state.unitsAdded} 
+                            onChange={e => item.setter({ ...item.state, unitsAdded: e.target.value })} 
+                            className="w-full tactical-input p-2 text-xs font-mono text-white bg-[#0b0f17]"
+                          />
+                        </div>
+                        <div className="flex flex-col flex-1 min-w-[80px]">
+                          <label className="text-[9px] uppercase tracking-widest text-slate-400 font-black mb-1">FR911 Call Drop</label>
+                          <input 
+                            type="time" 
+                            step="1"
+                            value={item.state.callDrop} 
+                            onChange={e => item.setter({ ...item.state, callDrop: e.target.value })} 
+                            className="w-full tactical-input p-2 text-xs font-mono text-white bg-[#0b0f17]"
+                          />
+                        </div>
+                        <div className="flex flex-col min-w-[80px]">
+                          <label className="text-[9px] uppercase tracking-widest text-slate-400 font-black mb-1">Difference</label>
+                          <div className="px-2 py-1.5 font-bold text-base text-indigo-400">
+                            {formatSecs(item.diff)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    <div className="p-3 rounded border border-white/10 bg-black/40 flex justify-end items-center gap-4">
+                      <div className="text-[9px] font-black uppercase tracking-widest text-slate-400">Average:</div>
+                      <div className="text-lg font-black text-indigo-400">
+                        {formatSecs(frAverageDiff)}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
 
               {/* Actions Footer Bar */}
               <div className="tactical-card p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden">
