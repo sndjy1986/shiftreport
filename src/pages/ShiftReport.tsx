@@ -88,6 +88,43 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
   // Custom Box Prompt Label Color & Size Configuration synced with ThemeSelectorModal
   const [labelStyle, setLabelStyle] = useState<LabelStyleConfig>(getSavedLabelStyle);
 
+  const [dispatch1, setDispatch1] = useState({ cfs: '', code: '', units: '' });
+  const [dispatch2, setDispatch2] = useState({ cfs: '', code: '', units: '' });
+
+  const parseTime = (timeStr: string) => {
+    if (!timeStr) return null;
+    const [h, m, s = 0] = timeStr.split(':').map(Number);
+    return (h * 3600) + (m * 60) + s;
+  };
+
+  const getDiff = (d: { code: string, units: string }) => {
+    const codeTime = parseTime(d.code);
+    const unitsTime = parseTime(d.units);
+    if (codeTime === null || unitsTime === null) return null;
+    let diff = unitsTime - codeTime;
+    if (diff < 0) diff += 24 * 3600;
+    return diff;
+  };
+
+  const formatSecs = (s: number | null) => {
+    if (s === null) return '--';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}m ${sec}s`;
+  };
+
+  const diff1 = getDiff(dispatch1);
+  const diff2 = getDiff(dispatch2);
+  
+  let averageDiff: number | null = null;
+  if (diff1 !== null && diff2 !== null) {
+    averageDiff = (diff1 + diff2) / 2;
+  } else if (diff1 !== null) {
+    averageDiff = diff1;
+  } else if (diff2 !== null) {
+    averageDiff = diff2;
+  }
+
   useEffect(() => {
     const handleStyleUpdate = (e: any) => {
       if (e?.detail) {
@@ -103,8 +140,6 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
       window.removeEventListener('storage', handleStyleUpdate);
     };
   }, []);
-  
-
   
   // Standalone detection
   const isStandalone = true;
@@ -785,6 +820,73 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                   </div>
                 </section>
               )}
+
+              {/* Dispatch Time Checks */}
+              <section className="tactical-card p-6 sm:p-8 space-y-6 group">
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                   <h2 
+                     style={{ color: labelStyle.color }}
+                     className="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 transition-colors"
+                   >
+                      <Clock className="w-4 h-4" /> Random Dispatch Time Checks
+                   </h2>
+                </div>
+                
+                <div className="space-y-4">
+                  {[
+                    { state: dispatch1, setter: setDispatch1, diff: diff1 },
+                    { state: dispatch2, setter: setDispatch2, diff: diff2 }
+                  ].map((item, idx) => (
+                    <div 
+                      key={idx}
+                      className="p-4 rounded border border-white/10 bg-[#0b0f17]/50 flex flex-wrap gap-4 items-end"
+                    >
+                      <div className="flex flex-col flex-1 min-w-[120px]">
+                        <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-1">CFS Number</label>
+                        <input 
+                          type="text" 
+                          value={item.state.cfs} 
+                          onChange={e => item.setter({ ...item.state, cfs: e.target.value })} 
+                          className="w-full tactical-input p-2.5 text-xs font-mono text-white bg-[#0b0f17]"
+                        />
+                      </div>
+                      <div className="flex flex-col flex-1 min-w-[120px]">
+                        <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-1">Code Added</label>
+                        <input 
+                          type="time" 
+                          step="1"
+                          value={item.state.code} 
+                          onChange={e => item.setter({ ...item.state, code: e.target.value })} 
+                          className="w-full tactical-input p-2.5 text-xs font-mono text-white bg-[#0b0f17]"
+                        />
+                      </div>
+                      <div className="flex flex-col flex-1 min-w-[120px]">
+                        <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-1">Units Added</label>
+                        <input 
+                          type="time" 
+                          step="1"
+                          value={item.state.units} 
+                          onChange={e => item.setter({ ...item.state, units: e.target.value })} 
+                          className="w-full tactical-input p-2.5 text-xs font-mono text-white bg-[#0b0f17]"
+                        />
+                      </div>
+                      <div className="flex flex-col min-w-[100px]">
+                        <label className="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-1">Difference</label>
+                        <div className="px-3 py-2 font-bold text-lg text-indigo-400">
+                          {formatSecs(item.diff)}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <div className="p-4 rounded border border-white/10 bg-black/40 flex justify-end items-center gap-4">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Average:</div>
+                    <div className="text-xl font-black text-indigo-400">
+                      {formatSecs(averageDiff)}
+                    </div>
+                  </div>
+                </div>
+              </section>
 
               {/* Actions Footer Bar */}
               <div className="tactical-card p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden">
