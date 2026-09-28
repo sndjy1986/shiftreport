@@ -82,7 +82,7 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
 
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [showToast, setShowToast] = useState<string | null>(null);
-  const [showPasteModal, setShowPasteModal] = useState(false);
+  const [showLinksModal, setShowLinksModal] = useState(false);
   const [showPreviewDrawer, setShowPreviewDrawer] = useState(false);
   
   // Custom Box Prompt Label Color & Size Configuration synced with ThemeSelectorModal
@@ -104,7 +104,7 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
     };
   }, []);
   
-  const handlePasteReport = () => setShowPasteModal(true);
+
   
   // Standalone detection
   const isStandalone = true;
@@ -603,12 +603,12 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
 
                  <button
                    type="button"
-                   onClick={handlePasteReport}
+                   onClick={() => setShowLinksModal(true)}
                    className="tactical-btn-indigo px-5 py-2.5 text-[10px] shadow-indigo-600/20 cursor-pointer"
-                   title="Process Raw Roster Grid Data"
+                   title="View Important Links"
                  >
-                   <Maximize2 className="w-3.5 h-3.5" />
-                   Vector Stream
+                   <Globe className="w-3.5 h-3.5" />
+                   Links
                  </button>
 
                  <button
@@ -854,13 +854,6 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                         <FileText className="w-4 h-4" /> Operational Log & Other Issues
                      </h2>
                      <div className="flex items-center gap-4">
-                       <button 
-                          type="button" 
-                          onClick={() => setShowPasteModal(true)}
-                          className="text-[9px] text-indigo-400 hover:text-indigo-300 flex items-center gap-2 uppercase font-black tracking-[0.2em] transition-colors cursor-pointer"
-                       >
-                         <Maximize2 className="w-3 h-3" /> System Fullscreen
-                       </button>
                        <div className="w-24 h-[1px] bg-gradient-to-r from-indigo-500/30 to-transparent" />
                      </div>
                   </div>
@@ -1037,38 +1030,41 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
         </aside>
       </div>
 
-      {/* Vector Stream / Roster Processing Modal */}
-      {showPasteModal && (
+      {/* Links Modal */}
+      {showLinksModal && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 sm:p-6">
-          <div onClick={() => setShowPasteModal(false)} className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" />
-          <div className="relative w-full max-w-4xl bg-slate-900 border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[85vh] z-10">
+          <div onClick={() => setShowLinksModal(false)} className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" />
+          <div className="relative w-full max-w-4xl bg-slate-900 border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] z-10">
             <div className="p-6 sm:p-8 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
               <div>
-                <h3 className="text-2xl font-black text-white tracking-tight uppercase">Roster Processing</h3>
-                <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest font-black">Paste data grid from source system</p>
+                <h3 className="text-2xl font-black text-white tracking-tight uppercase flex items-center gap-3">
+                  <Globe className="w-6 h-6 text-indigo-400" /> Important Links
+                </h3>
+                <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest font-black">Quick access to operational resources</p>
               </div>
               <button 
-                onClick={() => setShowPasteModal(false)} 
+                onClick={() => setShowLinksModal(false)} 
                 className="p-2.5 hover:bg-white/10 rounded-2xl transition-colors text-slate-400 hover:text-white cursor-pointer"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <div className="p-6 sm:p-8 flex-1 relative bg-black/40">
-              <textarea 
-                className="w-full h-full bg-black/50 text-white p-6 rounded-2xl border border-white/10 font-mono text-sm resize-none outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all font-medium shadow-inner"
-                placeholder="Ctrl+V roster data here..."
-                value={data.pasteNotes}
-                onChange={(e) => setData(prev => ({ ...prev, pasteNotes: e.target.value }))}
-                autoFocus
-              />
+            <div className="p-6 sm:p-8 flex-1 overflow-y-auto custom-scrollbar bg-black/40">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <ExternalLinkItem href="https://example.com/schedule" label="Crew Schedule" meta="WhenToWork" />
+                <ExternalLinkItem href="https://example.com/email" label="Company Webmail" meta="Outlook Web Access" />
+                <ExternalLinkItem href="https://example.com/portal" label="Employee Portal" meta="HR & Payroll" />
+                <ExternalLinkItem href="https://example.com/protocols" label="EMS Protocols" meta="State Guidelines" />
+                <ExternalLinkItem href="https://example.com/dispatch" label="CAD Live Feed" meta="Active Incidents" />
+                <ExternalLinkItem href="https://example.com/weather" label="Weather Center" meta="NOAA / NWS" />
+              </div>
             </div>
             <div className="p-6 sm:p-8 bg-white/[0.02] flex justify-end gap-4 border-t border-white/10">
               <button 
-                onClick={() => setShowPasteModal(false)}
+                onClick={() => setShowLinksModal(false)}
                 className="bg-indigo-600 hover:bg-indigo-500 px-8 py-3.5 rounded-xl text-white font-black uppercase tracking-widest text-xs transition-all shadow-xl shadow-indigo-600/30 active:scale-95 cursor-pointer"
               >
-                Incorporate Data
+                Close Window
               </button>
             </div>
           </div>
