@@ -861,11 +861,11 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
             </div>
             <div className="p-6 sm:p-8 flex-1 overflow-y-auto custom-scrollbar bg-black/40">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <ExternalLinkItem href="https://example.com/schedule" label="Crew Schedule" meta="WhenToWork" />
-                <ExternalLinkItem href="https://example.com/email" label="Company Webmail" meta="Outlook Web Access" />
-                <ExternalLinkItem href="https://example.com/portal" label="Employee Portal" meta="HR & Payroll" />
-                <ExternalLinkItem href="https://example.com/protocols" label="EMS Protocols" meta="State Guidelines" />
-                <ExternalLinkItem href="https://example.com/dispatch" label="CAD Live Feed" meta="Active Incidents" />
+                <ExternalLinkItem href="https://distancechecker.sndjy.us/" label="Distance Checker" meta="DistanceToCall" />
+                <ExternalLinkItem href="https://dotcamera.sndjy.us/" label="Dot Camera's" meta="DOT Camera's" />
+                <ExternalLinkItem href="https://drive.google.com/drive/folders/1pe1rJBNOYTTFuPa0yk3TMCnWd7v0pZ_W?usp=sharing" label="Shift Report" meta="Google Sheets" />
+                <ExternalLinkItem href="https://priorityambulance-my.sharepoint.com/:x:/g/personal/jsanders_medshore_com/IQB5-AkCs8b6TazKysmNYYE9AT53juYy9or_8_XJYYTCZNQ?e=KHSLnvhttpsAFFdocs.google.comFspreadsheetsFdF1gNp6K6y-nKFmrdt6BxvId68WqCh2MCWqE6irUOpWJDoFeditFgidD496939607#gidD496939607" label="Issue Tracker" meta="Issue Tracker" />
+                <ExternalLinkItem href="https://scheduling.esosuite.net/Login.aspx?db=priorityambulance" label="ESO" meta="ESO Login" />
                 <ExternalLinkItem href="https://example.com/weather" label="Weather Center" meta="NOAA / NWS" />
               </div>
             </div>
