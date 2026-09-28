@@ -425,6 +425,31 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
       addSection("Other Events", data.otherEvents);
     }
 
+    const formatTimeRow = (label: string, cfs: string, t1: string, t2: string, diff: string) => {
+      if (!cfs && !t1 && !t2) return null;
+      return `${label} - CFS: ${cfs || 'N/A'} | Times: ${t1 || '--'} to ${t2 || '--'} | Diff: ${diff}`;
+    };
+
+    const dispatchLines = [
+      formatTimeRow("Check 1", dispatch1.cfs, dispatch1.code, dispatch1.units, formatSecs(diff1)),
+      formatTimeRow("Check 2", dispatch2.cfs, dispatch2.code, dispatch2.units, formatSecs(diff2))
+    ].filter(Boolean) as string[];
+
+    if (dispatchLines.length > 0) {
+      dispatchLines.push(`Average Difference: ${formatSecs(averageDiff)}`);
+      addSection("Random Dispatch Time Checks", dispatchLines);
+    }
+
+    const fr911Lines = [
+      formatTimeRow("FR911 1", fr911_1.cfs, fr911_1.unitsAdded, fr911_1.callDrop, formatSecs(frDiff1)),
+      formatTimeRow("FR911 2", fr911_2.cfs, fr911_2.unitsAdded, fr911_2.callDrop, formatSecs(frDiff2))
+    ].filter(Boolean) as string[];
+
+    if (fr911Lines.length > 0) {
+      fr911Lines.push(`Average Difference: ${formatSecs(frAverageDiff)}`);
+      addSection("FR911 Times", fr911Lines);
+    }
+
     return reportParts.join("\n");
   };
 
