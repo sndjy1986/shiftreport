@@ -34,16 +34,8 @@ export function Layout({ children }: LayoutProps) {
     }
   };
 
-  const searchParams = new URLSearchParams(location.search);
-  const isShiftReportStandalone = 
-    location.pathname === '/single-shift-report' || 
-    location.pathname === '/shift-report/standalone';
-  const isStandalone = 
-    isShiftReportStandalone || 
-    searchParams.get('standalone') === 'true' ||
-    searchParams.get('standalone') === '1' ||
-    new URLSearchParams(window.location.search).get('standalone') === 'true' ||
-    new URLSearchParams(window.location.search).get('standalone') === '1';
+  const isShiftReportStandalone = true;
+  const isStandalone = true;
 
   const NOAA_GOES19_GEOCOLOR_URL = 'https://cdn.star.nesdis.noaa.gov/GOES19/ABI/FD/GEOCOLOR/10848x10848.jpg';
   const [standaloneSatelliteBg, setStandaloneSatelliteBg] = useState<string>(

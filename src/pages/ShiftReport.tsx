@@ -477,33 +477,13 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
   };
 
   const copyReportToClipboard = async (plainReport: string, htmlReport: string) => {
-    const fullHtml = `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Shift Report</title>
-<style>
-  h2 { font-family: Calibri, Helvetica, Arial, sans-serif !important; font-size: 20pt !important; mso-ansi-font-size: 20.0pt !important; mso-bidi-font-size: 20.0pt !important; font-weight: bold !important; text-decoration: underline !important; color: #000000 !important; margin-top: 14pt !important; margin-bottom: 3pt !important; }
-  p { font-family: Calibri, Helvetica, Arial, sans-serif !important; font-size: 13pt !important; mso-ansi-font-size: 13.0pt !important; color: #000000 !important; margin: 0 0 2pt 0 !important; line-height: 1.4 !important; }
-  u { text-decoration: underline !important; }
-  strong { font-weight: bold !important; }
-</style>
-</head>
-<body style="font-family: Calibri, Helvetica, Arial, sans-serif; font-size: 13pt; color: #000000; margin: 0; padding: 10px;">
-<!--StartFragment-->
-${htmlReport}
-<!--EndFragment-->
-</body>
-</html>`;
-
     let copied = false;
 
-    // 1. Primary: Async Clipboard API with text/plain and text/html
+    // Primary: Async Clipboard API with text/plain only
     try {
       if (navigator.clipboard && window.ClipboardItem) {
         const item = new ClipboardItem({
-          "text/plain": new Blob([plainReport], { type: "text/plain" }),
-          "text/html": new Blob([fullHtml], { type: "text/html" })
+          "text/plain": new Blob([plainReport], { type: "text/plain" })
         });
         await navigator.clipboard.write([item]);
         copied = true;
@@ -512,13 +492,12 @@ ${htmlReport}
       console.warn("Async Clipboard API error, attempting fallback:", e);
     }
 
-    // 2. Fallback: execCommand copy with rich clipboardData injection
+    // Fallback: execCommand copy
     if (!copied) {
       try {
         const copyHandler = (e: ClipboardEvent) => {
           e.preventDefault();
           if (e.clipboardData) {
-            e.clipboardData.setData('text/html', fullHtml);
             e.clipboardData.setData('text/plain', plainReport);
           }
         };
@@ -530,7 +509,7 @@ ${htmlReport}
       }
     }
 
-    // 3. Fallback: plain text only
+    // Ultimate Fallback: writeText
     if (!copied) {
       try {
         await navigator.clipboard.writeText(plainReport);
