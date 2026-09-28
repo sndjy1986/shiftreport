@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Palette, Check, Sun, Moon, Type, Sliders, RotateCcw, Sparkles, Activity } from 'lucide-react';
+import { Palette, Check, Sun, Moon, Type, Sliders, RotateCcw, Sparkles, Activity, Image } from 'lucide-react';
 import { useTerminal, AppTheme } from '../../context/TerminalContext';
 import { Modal } from './Modal';
 import { 
@@ -190,8 +190,8 @@ interface ThemeSelectorModalProps {
 }
 
 export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps) {
-  const { appTheme, setAppTheme } = useTerminal();
-  const [activeTab, setActiveTab] = useState<'themes' | 'typography'>('themes');
+  const { appTheme, setAppTheme, appBackgroundImage, setAppBackgroundImage } = useTerminal();
+  const [activeTab, setActiveTab] = useState<'themes' | 'typography' | 'background'>('themes');
   const [filter, setFilter] = useState<'all' | 'dark' | 'light'>('all');
   const [selectedToast, setSelectedToast] = useState<string | null>(null);
 
@@ -264,7 +264,19 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
               }`}
             >
               <Type className="w-4 h-4" />
-              Font & Typography
+              Typography
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('background')}
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+                activeTab === 'background'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Image className="w-4 h-4" />
+              Background
             </button>
           </div>
 
@@ -647,6 +659,48 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
               >
                 Apply & Save
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: BACKGROUND */}
+        {activeTab === 'background' && (
+          <div className="space-y-6 max-h-[65vh] overflow-y-auto custom-scrollbar pr-2">
+            <div>
+              <p className="text-xs text-slate-400 font-medium">
+                Set a custom background image URL. Clear the input to revert to the default live NOAA satellite feed.
+              </p>
+            </div>
+            
+            <div className="tactical-card p-6 space-y-4 shadow-xl">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-300 flex items-center gap-2">
+                <Image className="w-3.5 h-3.5 text-indigo-400" />
+                Custom Background Image URL
+              </label>
+              
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <input 
+                  type="text" 
+                  value={appBackgroundImage || ''} 
+                  onChange={(e) => setAppBackgroundImage(e.target.value || null)}
+                  placeholder="https://example.com/image.jpg" 
+                  className="flex-1 w-full bg-black/40 border border-white/10 text-white text-xs font-mono rounded-xl p-3 outline-none focus:border-indigo-500/50"
+                />
+                
+                <button
+                  type="button"
+                  onClick={() => setAppBackgroundImage(null)}
+                  className="w-full sm:w-auto px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-black text-xs uppercase tracking-widest rounded-xl transition-all border border-rose-500/20 cursor-pointer"
+                >
+                  Clear Default
+                </button>
+              </div>
+              
+              {appBackgroundImage && (
+                <div className="mt-4 border border-white/10 rounded-xl overflow-hidden h-40 relative">
+                  <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${appBackgroundImage})` }} />
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { format } from 'date-fns';
-import Editor from 'react-simple-wysiwyg';
+
 import { useLocation } from 'react-router-dom';
 import { useTerminal } from '../context/TerminalContext';
 import { 
@@ -864,10 +864,15 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                        <div className="w-24 h-[1px] bg-gradient-to-r from-indigo-500/30 to-transparent" />
                      </div>
                   </div>
-                  <div className="bg-[#0b0f17]/50 rounded border border-white/10" style={{minHeight: "150px", color: "white"}}><Editor 
+                  <textarea 
+                    name="issues"
                     value={data.issues} 
-                    onChange={(e) => setData({...data, issues: e.target.value})} 
-                  /></div>
+                    onChange={handleChange}
+                    onKeyDown={handleTextareaTab}
+                    rows={6}
+                    className="w-full bg-[#0b0f17]/50 rounded border border-white/10 p-4 text-sm font-sans text-white focus:outline-none focus:border-indigo-500/50 resize-y"
+                    placeholder="ENTER OTHER ISSUES..."
+                  />
                   <div className="pt-4 mt-4 border-t border-white/10">
                     <label 
                       style={{ 
@@ -878,10 +883,15 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                     >
                       Buffer Data / Roster Sync Notes
                     </label>
-                    <div className="bg-[#0b0f17]/50 rounded border border-white/10" style={{minHeight: "100px", color: "white"}}><Editor 
+                    <textarea 
+                      name="pasteNotes"
                       value={data.pasteNotes} 
-                      onChange={(e) => setData({...data, pasteNotes: e.target.value})} 
-                    /></div>
+                      onChange={handleChange}
+                      onKeyDown={handleTextareaTab}
+                      rows={5}
+                      className="w-full bg-[#0b0f17]/50 rounded border border-white/10 p-4 text-sm font-sans text-white focus:outline-none focus:border-indigo-500/50 resize-y"
+                      placeholder="ENTER BUFFER DATA..."
+                    />
                   </div>
                 </section>
               ) : (
