@@ -541,8 +541,8 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
     <div className="relative selection:bg-indigo-500/30">
       {/* Background Ambience */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 transition-opacity duration-1000">
-        <div className="absolute top-[10%] left-[10%] w-[50%] h-[50%] bg-indigo-500/5 blur-[120px] rounded-full animate-pulse-slow" />
-        <div className="absolute bottom-[10%] right-[10%] w-[50%] h-[50%] bg-blue-500/5 blur-[120px] rounded-full animate-pulse-slow delay-700" />
+        <div className="absolute top-[10%] left-[10%] w-[50%] h-[50%] bg-white/[0.015] blur-[140px] rounded-full" />
+        <div className="absolute bottom-[10%] right-[10%] w-[50%] h-[50%] bg-white/[0.01] blur-[140px] rounded-full" />
       </div>
 
       <div className="relative z-10">

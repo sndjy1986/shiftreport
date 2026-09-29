@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Palette, Check, Sun, Moon, Type, Sliders, RotateCcw, Sparkles, Activity, Image } from 'lucide-react';
+import { Palette, Check, Sun, Moon, Type, Sliders, RotateCcw, Sparkles, Activity, Image, Globe } from 'lucide-react';
 import { useTerminal, AppTheme } from '../../context/TerminalContext';
 import { Modal } from './Modal';
 import { 
@@ -668,8 +668,70 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
           <div className="space-y-6 max-h-[65vh] overflow-y-auto custom-scrollbar pr-2">
             <div>
               <p className="text-xs text-slate-400 font-medium">
-                Set a custom background image URL. Clear the input to revert to the default live NOAA satellite feed.
+                Choose a background display style. By default, the clean theme canvas (OLED, Carbon, Navy, etc.) is displayed with no image overlay.
               </p>
+            </div>
+
+            {/* Quick Presets */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setAppBackgroundImage(null);
+                  setSelectedToast('CLEAN THEME CANVAS ACTIVATED');
+                  setTimeout(() => setSelectedToast(null), 2500);
+                }}
+                className={`p-4 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden backdrop-blur-md ${
+                  !appBackgroundImage 
+                    ? 'bg-emerald-500/10 border-emerald-500/40 shadow-lg shadow-emerald-950/40 ring-1 ring-emerald-500/30' 
+                    : 'bg-white/[0.03] hover:bg-white/[0.08] border-white/10 hover:border-white/20'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                    Clean Theme Canvas
+                  </span>
+                  {!appBackgroundImage && (
+                    <span className="w-5 h-5 rounded-full bg-emerald-500 text-black flex items-center justify-center shrink-0">
+                      <Check className="w-3 h-3 stroke-[3]" />
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] text-slate-400 font-medium">
+                  Pure theme background with zero image overlay. Crisp, clean, and distraction-free.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const noaaUrl = 'https://cdn.star.nesdis.noaa.gov/GOES19/ABI/FD/GEOCOLOR/10848x10848.jpg';
+                  setAppBackgroundImage(noaaUrl);
+                  setSelectedToast('LIVE NOAA SATELLITE ACTIVATED');
+                  setTimeout(() => setSelectedToast(null), 2500);
+                }}
+                className={`p-4 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden backdrop-blur-md ${
+                  appBackgroundImage?.includes('nesdis.noaa.gov') 
+                    ? 'bg-indigo-500/15 border-indigo-500/40 shadow-lg shadow-indigo-950/40 ring-1 ring-indigo-500/30' 
+                    : 'bg-white/[0.03] hover:bg-white/[0.08] border-white/10 hover:border-white/20'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-2">
+                    <Globe className="w-3.5 h-3.5 text-indigo-400" />
+                    Live NOAA Satellite
+                  </span>
+                  {appBackgroundImage?.includes('nesdis.noaa.gov') && (
+                    <span className="w-5 h-5 rounded-full bg-indigo-500 text-white flex items-center justify-center shrink-0">
+                      <Check className="w-3 h-3 stroke-[3]" />
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] text-slate-400 font-medium">
+                  Live GOES-19 GeoColor full disk satellite view of Earth.
+                </p>
+              </button>
             </div>
             
             <div className="tactical-card p-6 space-y-4 shadow-xl">
@@ -689,10 +751,14 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                 
                 <button
                   type="button"
-                  onClick={() => setAppBackgroundImage(null)}
-                  className="w-full sm:w-auto px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-black text-xs uppercase tracking-widest rounded-xl transition-all border border-rose-500/20 cursor-pointer"
+                  onClick={() => {
+                    setAppBackgroundImage(null);
+                    setSelectedToast('RESET TO CLEAN THEME');
+                    setTimeout(() => setSelectedToast(null), 2500);
+                  }}
+                  className="w-full sm:w-auto px-5 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-black text-xs uppercase tracking-widest rounded-xl transition-all border border-rose-500/20 cursor-pointer whitespace-nowrap"
                 >
-                  Clear Default
+                  Clear Image
                 </button>
               </div>
               

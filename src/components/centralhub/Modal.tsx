@@ -43,8 +43,7 @@ export function Modal({
             className={`bg-bg-surface/85 backdrop-blur-2xl border border-white/15 rounded-[2.5rem] w-full ${actualMaxWidth} max-h-[92vh] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),inset_0_1px_1.5px_rgba(255,255,255,0.28)] flex flex-col overflow-hidden relative z-10`}
           >
             {/* Ambient Glass Reflections */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/[0.08] via-white/[0.01] to-black/20 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/8 via-transparent to-emerald-500/6 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/[0.08] via-white/[0.01] to-black/25 pointer-events-none" />
             
             {/* Header */}
             <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-white/10 bg-white/[0.03] backdrop-blur-md flex items-center justify-between relative z-10 shrink-0">

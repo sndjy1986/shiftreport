@@ -51,10 +51,19 @@ export function TerminalProvider({ children }: { children: React.ReactNode }) {
   const [emergencyLevel, setEmergencyLevel] = useState<EmergencyLevel>('NORMAL');
   const [manualEmergencyMode, setManualEmergencyMode] = useState(false);
   const [emergencyOpacity, setEmergencyOpacity] = useState(0.2);
-  const [weatherZip, setWeatherZip] = useState<string | null>(null);
-  const [appTheme, setAppTheme] = useState<AppTheme>('paper');
-  const [appBackgroundImage, setAppBackgroundImage] = useState<string | null>(null);
-  const [isSyncingTheme, setIsSyncingTheme] = useState(false);
+  const [appTheme, setAppTheme] = useState<AppTheme>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('appTheme') as AppTheme;
+      if (saved) return saved;
+    }
+    return 'stealth';
+  });
+  const [appBackgroundImage, setAppBackgroundImage] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('appBackgroundImage') || null;
+    }
+    return null;
+  });
   const [isSavingGlobal, setIsSavingGlobal] = useState(false);
   const [toneTestMode, setToneTestMode] = useState<boolean>(() => localStorage.getItem('toneTestMode') !== 'false');
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -168,8 +177,10 @@ export function TerminalProvider({ children }: { children: React.ReactNode }) {
     } else if (savedLocal && !savedRemote && savedLocal !== appTheme) {
       setAppTheme(savedLocal);
       document.documentElement.setAttribute('data-theme', savedLocal);
+    } else {
+      document.documentElement.setAttribute('data-theme', appTheme);
     }
-  }, [userSettings?.appTheme]);
+  }, [userSettings?.appTheme, appTheme]);
   // Sync user settings from Firestore with offline local storage fallbacks
   useEffect(() => {
     let unsub: any = null;

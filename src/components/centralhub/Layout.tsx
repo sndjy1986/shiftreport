@@ -37,39 +37,12 @@ export function Layout({ children }: LayoutProps) {
   const isShiftReportStandalone = true;
   const isStandalone = true;
 
-  const NOAA_GOES19_GEOCOLOR_URL = 'https://cdn.star.nesdis.noaa.gov/GOES19/ABI/FD/GEOCOLOR/10848x10848.jpg';
-  const [standaloneSatelliteBg, setStandaloneSatelliteBg] = useState<string>(
-    `${NOAA_GOES19_GEOCOLOR_URL}?t=${Date.now()}`
-  );
-
-  // Auto-refresh NOAA GOES-19 satellite image every 1 hour
-  useEffect(() => {
-    if (!isShiftReportStandalone) return;
-
-    const REFRESH_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
-
-    const fetchLatestSatelliteImage = () => {
-      const timestamp = Date.now();
-      const freshUrl = `${NOAA_GOES19_GEOCOLOR_URL}?t=${timestamp}`;
-
-      const img = new Image();
-      img.src = freshUrl;
-      img.onload = () => {
-        setStandaloneSatelliteBg(freshUrl);
-      };
-    };
-
-    const intervalId = setInterval(fetchLatestSatelliteImage, REFRESH_INTERVAL_MS);
-    return () => clearInterval(intervalId);
-  }, [isShiftReportStandalone]);
-
-  const activeBackgroundImage = isShiftReportStandalone 
-    ? (appBackgroundImage || standaloneSatelliteBg) 
-    : appBackgroundImage;
+  // Background image only active if explicitly configured by the user
+  const activeBackgroundImage = appBackgroundImage;
 
   return (
     <div className="h-screen bg-brand-bg text-text-main relative overflow-hidden font-sans transition-colors duration-500" data-theme={appTheme}>
-      {/* Background Image: Permanent on Standalone, configurable on standard */}
+      {/* Background Image: Only shown when explicitly set in Theme Selector */}
       {activeBackgroundImage && (
         <>
           <div 
@@ -77,13 +50,13 @@ export function Layout({ children }: LayoutProps) {
             style={{ backgroundImage: `url(${activeBackgroundImage})` }}
           />
           {/* Subtle overlay to ensure UI elements remain legible */}
-          <div className="fixed inset-0 z-0 bg-brand-bg/50 backdrop-blur-[2px] pointer-events-none" />
+          <div className="fixed inset-0 z-0 bg-brand-bg/60 backdrop-blur-[2px] pointer-events-none" />
         </>
       )}
 
       {/* Subtle Ambient Depth Lighting */}
-      <div className="fixed top-[-10%] left-[-10%] w-[400px] h-[400px] bg-brand-indigo/10 rounded-full blur-[100px] pointer-events-none transition-colors duration-500 z-0" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-brand-emerald/05 rounded-full blur-[120px] pointer-events-none transition-colors duration-500 z-0" />
+      <div className="fixed top-[-10%] left-[-10%] w-[400px] h-[400px] bg-white/[0.015] rounded-full blur-[100px] pointer-events-none z-0" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-white/[0.015] rounded-full blur-[120px] pointer-events-none z-0" />
 
       <EmergencyBackground />
       
