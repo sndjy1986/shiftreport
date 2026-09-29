@@ -51,6 +51,8 @@ export function TerminalProvider({ children }: { children: React.ReactNode }) {
   const [emergencyLevel, setEmergencyLevel] = useState<EmergencyLevel>('NORMAL');
   const [manualEmergencyMode, setManualEmergencyMode] = useState(false);
   const [emergencyOpacity, setEmergencyOpacity] = useState(0.2);
+  const [weatherZip, setWeatherZip] = useState<string | null>(null);
+  const [isSyncingTheme, setIsSyncingTheme] = useState(false);
   const [appTheme, setAppTheme] = useState<AppTheme>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('appTheme') as AppTheme;
@@ -168,19 +170,19 @@ export function TerminalProvider({ children }: { children: React.ReactNode }) {
   }, [userSettings?.weatherZip]);
 
   useEffect(() => {
+    document.documentElement.setAttribute('data-theme', appTheme);
+  }, [appTheme]);
+
+  useEffect(() => {
     const savedLocal = localStorage.getItem('appTheme') as AppTheme;
     const savedRemote = userSettings?.appTheme as AppTheme;
     
     if (savedRemote && savedRemote !== appTheme) {
       setAppTheme(savedRemote);
-      document.documentElement.setAttribute('data-theme', savedRemote);
     } else if (savedLocal && !savedRemote && savedLocal !== appTheme) {
       setAppTheme(savedLocal);
-      document.documentElement.setAttribute('data-theme', savedLocal);
-    } else {
-      document.documentElement.setAttribute('data-theme', appTheme);
     }
-  }, [userSettings?.appTheme, appTheme]);
+  }, [userSettings?.appTheme]);
   // Sync user settings from Firestore with offline local storage fallbacks
   useEffect(() => {
     let unsub: any = null;
