@@ -37,8 +37,8 @@ export function Layout({ children }: LayoutProps) {
   const isShiftReportStandalone = true;
   const isStandalone = true;
 
-  // Background image only active if explicitly configured by the user
-  const activeBackgroundImage = appBackgroundImage;
+  // Background image only active if explicitly configured by the user (ignoring legacy NOAA satellite)
+  const activeBackgroundImage = appBackgroundImage && !appBackgroundImage.includes('nesdis.noaa.gov') ? appBackgroundImage : null;
 
   return (
     <div className="h-screen bg-brand-bg text-text-main relative overflow-hidden font-sans transition-colors duration-500" data-theme={appTheme}>

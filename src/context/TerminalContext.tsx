@@ -62,7 +62,12 @@ export function TerminalProvider({ children }: { children: React.ReactNode }) {
   });
   const [appBackgroundImage, setAppBackgroundImage] = useState<string | null>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('appBackgroundImage') || null;
+      const saved = localStorage.getItem('appBackgroundImage');
+      if (saved && (saved.includes('nesdis') || saved.includes('noaa') || saved.includes('GEOCOLOR') || saved.includes('10848x10848'))) {
+        localStorage.removeItem('appBackgroundImage');
+        return null;
+      }
+      return saved || null;
     }
     return null;
   });

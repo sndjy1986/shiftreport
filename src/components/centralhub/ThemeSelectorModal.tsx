@@ -235,7 +235,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
       isOpen={isOpen}
       onClose={onClose}
       title="Appearance & Typography Matrix"
-      icon={<Palette className="w-5 h-5 text-indigo-400" />}
+      icon={<Palette className="w-5 h-5 text-emerald-400" />}
       maxWidth="max-w-4xl"
     >
       <div className="space-y-6">
@@ -247,7 +247,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
               onClick={() => setActiveTab('themes')}
               className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
                 activeTab === 'themes'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/40 border border-indigo-400/30'
+                  ? 'bg-white/15 text-white shadow-lg border border-white/30'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -259,7 +259,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
               onClick={() => setActiveTab('typography')}
               className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
                 activeTab === 'typography'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/40 border border-indigo-400/30'
+                  ? 'bg-white/15 text-white shadow-lg border border-white/30'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -271,7 +271,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
               onClick={() => setActiveTab('background')}
               className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
                 activeTab === 'background'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/40 border border-indigo-400/30'
+                  ? 'bg-white/15 text-white shadow-lg border border-white/30'
                   : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -288,7 +288,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                 onClick={() => setFilter('all')}
                 className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                   filter === 'all'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 border border-indigo-400/30'
+                    ? 'bg-white/15 text-white shadow-md border border-white/30'
                     : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -299,7 +299,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                 onClick={() => setFilter('dark')}
                 className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
                   filter === 'dark'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 border border-indigo-400/30'
+                    ? 'bg-white/15 text-white shadow-md border border-white/30'
                     : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -311,7 +311,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                 onClick={() => setFilter('light')}
                 className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
                   filter === 'light'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 border border-indigo-400/30'
+                    ? 'bg-white/15 text-white shadow-md border border-white/30'
                     : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -339,7 +339,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                     onClick={() => handleSelectTheme(theme.id, theme.name)}
                     className={`group text-left p-5 rounded-2xl border transition-all duration-200 relative overflow-hidden flex flex-col justify-between gap-4 cursor-pointer backdrop-blur-md shadow-lg hover:-translate-y-0.5 ${
                       isSelected
-                        ? 'bg-indigo-600/25 border-indigo-400/80 ring-2 ring-indigo-400/50 shadow-xl shadow-indigo-950/60'
+                        ? 'bg-emerald-500/10 border-emerald-400/80 ring-2 ring-emerald-400/30 shadow-xl shadow-black/60'
                         : 'bg-white/[0.03] hover:bg-white/[0.08] border-white/10 hover:border-white/25 shadow-black/40'
                     }`}
                   >
@@ -578,7 +578,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                       onClick={() => updateLabelStyle({ fontSize: preset.size })}
                       className={`py-2 px-2 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all cursor-pointer text-center backdrop-blur-sm ${
                         isSelected
-                          ? 'bg-indigo-600 text-white border-indigo-400 shadow-md shadow-indigo-600/30'
+                          ? 'bg-white/20 text-white border-white/40 shadow-md ring-1 ring-white/30'
                           : 'bg-white/[0.03] text-slate-300 border-white/10 hover:bg-white/[0.08] hover:text-white'
                       }`}
                     >
@@ -655,7 +655,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                   setSelectedToast("TYPOGRAPHY SETTINGS SAVED");
                   setTimeout(() => setSelectedToast(null), 2000);
                 }}
-                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-indigo-600/30 active:scale-95 cursor-pointer"
+                className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-emerald-950/40 active:scale-95 cursor-pointer"
               >
                 Apply & Save
               </button>

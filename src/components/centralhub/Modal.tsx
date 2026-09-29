@@ -40,16 +40,16 @@ export function Modal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 16 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className={`bg-bg-surface/85 backdrop-blur-2xl border border-white/15 rounded-[2.5rem] w-full ${actualMaxWidth} max-h-[92vh] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7),inset_0_1px_1.5px_rgba(255,255,255,0.28)] flex flex-col overflow-hidden relative z-10`}
+            className={`bg-[#0b0f17]/95 backdrop-blur-2xl border border-white/15 rounded-[2.5rem] w-full ${actualMaxWidth} max-h-[92vh] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),inset_0_1px_1.5px_rgba(255,255,255,0.2)] flex flex-col overflow-hidden relative z-10`}
           >
             {/* Ambient Glass Reflections */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/[0.08] via-white/[0.01] to-black/25 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/[0.08] via-white/[0.01] to-black/30 pointer-events-none" />
             
             {/* Header */}
             <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-white/10 bg-white/[0.03] backdrop-blur-md flex items-center justify-between relative z-10 shrink-0">
               <div className="flex items-center gap-3.5 sm:gap-4">
                 {icon && (
-                  <div className="w-10 h-10 rounded-2xl bg-indigo-500/15 border border-indigo-400/30 flex items-center justify-center text-indigo-400 shadow-md shadow-indigo-950/40 shrink-0">
+                  <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/15 flex items-center justify-center text-emerald-400 shadow-md shrink-0">
                     {icon}
                   </div>
                 )}

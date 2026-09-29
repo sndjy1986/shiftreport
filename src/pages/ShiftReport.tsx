@@ -1070,7 +1070,7 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
         onClose={() => setShowLinksModal(false)}
         title="Important Operations Links"
         subtitle="Tactical & Dispatch Resource Directory"
-        icon={<Globe className="w-5 h-5 text-indigo-400" />}
+        icon={<Globe className="w-5 h-5 text-emerald-400" />}
         maxWidth="max-w-4xl"
       >
         <div className="space-y-6">
@@ -1117,7 +1117,7 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
             <button 
               type="button"
               onClick={() => setShowLinksModal(false)}
-              className="tactical-btn-indigo px-8 py-3 text-xs"
+              className="px-8 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black uppercase tracking-widest text-xs transition-all border border-white/20 cursor-pointer shadow-lg active:scale-95"
             >
               Close Window
             </button>
@@ -1176,12 +1176,12 @@ function ExternalLinkItem({
       href={href} 
       target="_blank" 
       rel="noopener noreferrer"
-      className="p-4 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] backdrop-blur-md border border-white/10 hover:border-indigo-400/40 group transition-all duration-200 flex flex-col justify-between gap-3 shadow-md hover:shadow-xl hover:shadow-indigo-950/40 hover:-translate-y-0.5 cursor-pointer relative overflow-hidden"
+      className="p-4 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] backdrop-blur-md border border-white/10 hover:border-emerald-400/40 group transition-all duration-200 flex flex-col justify-between gap-3 shadow-md hover:shadow-xl hover:shadow-black/50 hover:-translate-y-0.5 cursor-pointer relative overflow-hidden"
     >
       <div className="flex items-start justify-between gap-3 relative z-10">
         <div className="flex items-center gap-3">
           {Icon && (
-            <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500/20 group-hover:text-indigo-300 transition-colors shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-400/20 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500/20 group-hover:text-emerald-300 transition-colors shrink-0">
               <Icon className="w-4 h-4" />
             </div>
           )}
@@ -1189,13 +1189,13 @@ function ExternalLinkItem({
             {label}
           </span>
         </div>
-        <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+        <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
       </div>
       <span className="text-[9px] font-mono font-bold text-slate-400 group-hover:text-slate-300 uppercase tracking-widest block pl-0.5 relative z-10">
         {meta}
       </span>
       {/* Subtle hover gradient glow */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-transparent to-indigo-500/[0.05] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/0 via-transparent to-emerald-500/[0.05] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
     </a>
   );
 }
