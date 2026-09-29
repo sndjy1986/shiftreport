@@ -240,15 +240,15 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
     >
       <div className="space-y-6">
         {/* Top Navigation Bar: Tabs */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-2 border-b border-white/10">
-          <div className="flex items-center gap-2 p-1 bg-black/40 border border-white/10 rounded-2xl w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-white/10">
+          <div className="flex items-center gap-1.5 p-1.5 bg-black/35 backdrop-blur-md border border-white/15 rounded-2xl w-full sm:w-auto shadow-inner">
             <button
               type="button"
               onClick={() => setActiveTab('themes')}
-              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
                 activeTab === 'themes'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/40 border border-indigo-400/30'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <Palette className="w-4 h-4" />
@@ -257,10 +257,10 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
             <button
               type="button"
               onClick={() => setActiveTab('typography')}
-              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
                 activeTab === 'typography'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/40 border border-indigo-400/30'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <Type className="w-4 h-4" />
@@ -269,10 +269,10 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
             <button
               type="button"
               onClick={() => setActiveTab('background')}
-              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
                 activeTab === 'background'
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/40 border border-indigo-400/30'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <Image className="w-4 h-4" />
@@ -282,14 +282,14 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
 
           {/* If on themes tab, show filter */}
           {activeTab === 'themes' && (
-            <div className="flex items-center gap-1.5 p-1 bg-black/40 border border-white/10 rounded-2xl self-end sm:self-auto">
+            <div className="flex items-center gap-1.5 p-1 bg-black/35 backdrop-blur-md border border-white/15 rounded-2xl self-end sm:self-auto shadow-inner">
               <button
                 type="button"
                 onClick={() => setFilter('all')}
-                className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${
                   filter === 'all'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 border border-indigo-400/30'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 All ({THEME_LIST.length})
@@ -297,10 +297,10 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
               <button
                 type="button"
                 onClick={() => setFilter('dark')}
-                className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
                   filter === 'dark'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 border border-indigo-400/30'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <Moon className="w-3 h-3" />
@@ -309,10 +309,10 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
               <button
                 type="button"
                 onClick={() => setFilter('light')}
-                className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer ${
                   filter === 'light'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30 border border-indigo-400/30'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <Sun className="w-3 h-3" />
@@ -337,10 +337,10 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                     key={theme.id}
                     type="button"
                     onClick={() => handleSelectTheme(theme.id, theme.name)}
-                    className={`group text-left p-5 rounded-2xl border transition-all relative overflow-hidden flex flex-col justify-between gap-4 cursor-pointer ${
+                    className={`group text-left p-5 rounded-2xl border transition-all duration-200 relative overflow-hidden flex flex-col justify-between gap-4 cursor-pointer backdrop-blur-md shadow-lg hover:-translate-y-0.5 ${
                       isSelected
-                        ? 'bg-indigo-600/20 border-indigo-400 ring-2 ring-indigo-400/50 shadow-xl shadow-indigo-950/50'
-                        : 'bg-black/40 border-white/10 hover:border-white/25 hover:bg-white/[0.04]'
+                        ? 'bg-indigo-600/25 border-indigo-400/80 ring-2 ring-indigo-400/50 shadow-xl shadow-indigo-950/60'
+                        : 'bg-white/[0.03] hover:bg-white/[0.08] border-white/10 hover:border-white/25 shadow-black/40'
                     }`}
                   >
                     <div className="space-y-3">
@@ -514,10 +514,10 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                       key={preset.hex}
                       type="button"
                       onClick={() => updateLabelStyle({ color: preset.hex })}
-                      className={`flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border transition-all cursor-pointer ${
+                      className={`flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border transition-all cursor-pointer backdrop-blur-sm ${
                         isSelected 
                           ? 'bg-white/15 border-white shadow-lg scale-105 ring-2 ring-indigo-500/40' 
-                          : 'bg-black/30 border-white/10 hover:border-white/30 hover:bg-white/5'
+                          : 'bg-white/[0.03] border-white/10 hover:border-white/30 hover:bg-white/[0.07]'
                       }`}
                       title={preset.description}
                     >
@@ -540,7 +540,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
               {/* Custom Hex Color Picker */}
               <div className="flex items-center gap-3 pt-2">
                 <span className="text-[9px] font-black uppercase tracking-wider text-slate-500">Custom Color:</span>
-                <div className="flex items-center gap-2 bg-black/40 border border-white/10 rounded-xl px-3 py-1.5 flex-1">
+                <div className="flex items-center gap-2 bg-black/35 backdrop-blur-sm border border-white/15 rounded-xl px-3 py-1.5 flex-1 shadow-inner">
                   <input 
                     type="color" 
                     value={labelStyle.color.startsWith('#') && labelStyle.color.length === 7 ? labelStyle.color : '#94a3b8'} 
@@ -576,10 +576,10 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                       key={preset.label}
                       type="button"
                       onClick={() => updateLabelStyle({ fontSize: preset.size })}
-                      className={`py-2 px-2 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all cursor-pointer text-center ${
+                      className={`py-2 px-2 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all cursor-pointer text-center backdrop-blur-sm ${
                         isSelected
                           ? 'bg-indigo-600 text-white border-indigo-400 shadow-md shadow-indigo-600/30'
-                          : 'bg-black/30 text-slate-300 border-white/10 hover:bg-white/10 hover:text-white'
+                          : 'bg-white/[0.03] text-slate-300 border-white/10 hover:bg-white/[0.08] hover:text-white'
                       }`}
                     >
                       {preset.label} ({preset.size}px)
@@ -612,7 +612,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                 <select
                   value={labelStyle.fontWeight}
                   onChange={(e) => updateLabelStyle({ fontWeight: e.target.value as LabelStyleConfig['fontWeight'] })}
-                  className="w-full bg-black/40 border border-white/10 text-white text-xs font-medium rounded-xl p-3 outline-none focus:border-indigo-500/50 cursor-pointer"
+                  className="w-full bg-black/35 backdrop-blur-sm border border-white/15 text-white text-xs font-medium rounded-xl p-3 outline-none focus:border-indigo-500/50 cursor-pointer"
                 >
                   <option value="font-normal" className="bg-slate-900">Normal (400)</option>
                   <option value="font-medium" className="bg-slate-900">Medium (500)</option>
@@ -629,7 +629,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                 <select
                   value={labelStyle.textTransform}
                   onChange={(e) => updateLabelStyle({ textTransform: e.target.value as LabelStyleConfig['textTransform'] })}
-                  className="w-full bg-black/40 border border-white/10 text-white text-xs font-medium rounded-xl p-3 outline-none focus:border-indigo-500/50 cursor-pointer"
+                  className="w-full bg-black/35 backdrop-blur-sm border border-white/15 text-white text-xs font-medium rounded-xl p-3 outline-none focus:border-indigo-500/50 cursor-pointer"
                 >
                   <option value="uppercase" className="bg-slate-900">UPPERCASE</option>
                   <option value="normal-case" className="bg-slate-900">Standard Case</option>
@@ -684,7 +684,7 @@ export function ThemeSelectorModal({ isOpen, onClose }: ThemeSelectorModalProps)
                   value={appBackgroundImage || ''} 
                   onChange={(e) => setAppBackgroundImage(e.target.value || null)}
                   placeholder="https://example.com/image.jpg" 
-                  className="flex-1 w-full bg-black/40 border border-white/10 text-white text-xs font-mono rounded-xl p-3 outline-none focus:border-indigo-500/50"
+                  className="flex-1 w-full bg-black/35 backdrop-blur-sm border border-white/15 text-white text-xs font-mono rounded-xl p-3 outline-none focus:border-indigo-500/50 shadow-inner"
                 />
                 
                 <button

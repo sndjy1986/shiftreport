@@ -32,9 +32,15 @@ import {
   AlertCircle,
   ArrowRight,
   EyeOff,
-  Eye
+  Eye,
+  MapPin,
+  Video,
+  FileSpreadsheet,
+  AlertTriangle,
+  ExternalLink
 } from 'lucide-react';
 import { ThemeSelectorButton } from '../components/centralhub/ThemeSelector';
+import { Modal } from '../components/centralhub/Modal';
 import { 
   TEAM_MEMBERS, 
   SHIFT_TEAMS,
@@ -1059,45 +1065,65 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
       )}
 
       {/* Links Modal */}
-      {showLinksModal && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 sm:p-6">
-          <div onClick={() => setShowLinksModal(false)} className="absolute inset-0 bg-slate-950/80 backdrop-blur-md" />
-          <div className="relative w-full max-w-4xl bg-slate-900 border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] z-10">
-            <div className="p-6 sm:p-8 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
-              <div>
-                <h3 className="text-2xl font-black text-white tracking-tight uppercase flex items-center gap-3">
-                  <Globe className="w-6 h-6 text-indigo-400" /> Important Links
-                </h3>
-                <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest font-black">Quick access to operational resources</p>
-              </div>
-              <button 
-                onClick={() => setShowLinksModal(false)} 
-                className="p-2.5 hover:bg-white/10 rounded-2xl transition-colors text-slate-400 hover:text-white cursor-pointer"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            <div className="p-6 sm:p-8 flex-1 overflow-y-auto custom-scrollbar bg-black/40">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <ExternalLinkItem href="https://distancechecker.sndjy.us/" label="Distance Checker" meta="Distance To Call" />
-                <ExternalLinkItem href="https://dotcamera.sndjy.us/" label="Dot Camera's" meta="DOT Camera's" />
-                <ExternalLinkItem href="https://drive.google.com/drive/folders/1pe1rJBNOYTTFuPa0yk3TMCnWd7v0pZ_W?usp=sharing" label="Shift Report" meta="Google Sheets" />
-                <ExternalLinkItem href="https://priorityambulance-my.sharepoint.com/:x:/g/personal/jsanders_medshore_com/IQB5-AkCs8b6TazKysmNYYE9AT53juYy9or_8_XJYYTCZNQ?e=KHSLnvhttpsAFFdocs.google.comFspreadsheetsFdF1gNp6K6y-nKFmrdt6BxvId68WqCh2MCWqE6irUOpWJDoFeditFgidD496939607#gidD496939607" label="Issue Tracker" meta="Issue Tracker" />
-                <ExternalLinkItem href="https://scheduling.esosuite.net/Login.aspx?db=priorityambulance" label="ESO" meta="ESO Login" />
-                <ExternalLinkItem href="https://docs.google.com/spreadsheets/d/1-4Uwh00g4orCaOQoOrLIcRkamAhdxrBNhVVOt2IEOoY/edit?gid=534085027#gid=534085027" label="Truck Up Times" meta="Truck Up Times" />
-              </div>
-            </div>
-            <div className="p-6 sm:p-8 bg-white/[0.02] flex justify-end gap-4 border-t border-white/10">
-              <button 
-                onClick={() => setShowLinksModal(false)}
-                className="bg-indigo-600 hover:bg-indigo-500 px-8 py-3.5 rounded-xl text-white font-black uppercase tracking-widest text-xs transition-all shadow-xl shadow-indigo-600/30 active:scale-95 cursor-pointer"
-              >
-                Close Window
-              </button>
-            </div>
+      <Modal
+        isOpen={showLinksModal}
+        onClose={() => setShowLinksModal(false)}
+        title="Important Operations Links"
+        subtitle="Tactical & Dispatch Resource Directory"
+        icon={<Globe className="w-5 h-5 text-indigo-400" />}
+        maxWidth="max-w-4xl"
+      >
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <ExternalLinkItem 
+              href="https://distancechecker.sndjy.us/" 
+              label="Distance Checker" 
+              meta="Distance To Call" 
+              icon={MapPin}
+            />
+            <ExternalLinkItem 
+              href="https://dotcamera.sndjy.us/" 
+              label="DOT Cameras" 
+              meta="DOT Highway Cameras" 
+              icon={Video}
+            />
+            <ExternalLinkItem 
+              href="https://drive.google.com/drive/folders/1pe1rJBNOYTTFuPa0yk3TMCnWd7v0pZ_W?usp=sharing" 
+              label="Shift Report" 
+              meta="Google Sheets Archive" 
+              icon={FileSpreadsheet}
+            />
+            <ExternalLinkItem 
+              href="https://priorityambulance-my.sharepoint.com/:x:/g/personal/jsanders_medshore_com/IQB5-AkCs8b6TazKysmNYYE9AT53juYy9or_8_XJYYTCZNQ?e=KHSLnvhttpsAFFdocs.google.comFspreadsheetsFdF1gNp6K6y-nKFmrdt6BxvId68WqCh2MCWqE6irUOpWJDoFeditFgidD496939607#gidD496939607" 
+              label="Issue Tracker" 
+              meta="Priority Incident Log" 
+              icon={AlertTriangle}
+            />
+            <ExternalLinkItem 
+              href="https://scheduling.esosuite.net/Login.aspx?db=priorityambulance" 
+              label="ESO Scheduling" 
+              meta="ESO Crew Portal" 
+              icon={Calendar}
+            />
+            <ExternalLinkItem 
+              href="https://docs.google.com/spreadsheets/d/1-4Uwh00g4orCaOQoOrLIcRkamAhdxrBNhVVOt2IEOoY/edit?gid=534085027#gid=534085027" 
+              label="Truck Up Times" 
+              meta="Fleet Status Sheet" 
+              icon={Truck}
+            />
+          </div>
+
+          <div className="flex justify-end pt-4 border-t border-white/10">
+            <button 
+              type="button"
+              onClick={() => setShowLinksModal(false)}
+              className="tactical-btn-indigo px-8 py-3 text-xs"
+            >
+              Close Window
+            </button>
           </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }
@@ -1134,19 +1160,42 @@ function Field({ label, children, icon: Icon }: { label: string; children: React
   );
 }
 
-function ExternalLinkItem({ href, label, meta }: { href: string; label: string; meta: string }) {
+function ExternalLinkItem({ 
+  href, 
+  label, 
+  meta, 
+  icon: Icon 
+}: { 
+  href: string; 
+  label: string; 
+  meta: string; 
+  icon?: React.ElementType;
+}) {
   return (
     <a 
       href={href} 
       target="_blank" 
       rel="noopener noreferrer"
-      className="p-3.5 rounded-xl bg-black/40 border border-white/10 hover:border-indigo-500/40 hover:bg-white/[0.04] group transition-all"
+      className="p-4 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] backdrop-blur-md border border-white/10 hover:border-indigo-400/40 group transition-all duration-200 flex flex-col justify-between gap-3 shadow-md hover:shadow-xl hover:shadow-indigo-950/40 hover:-translate-y-0.5 cursor-pointer relative overflow-hidden"
     >
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">{label}</span>
-        <ArrowRight className="w-3.5 h-3.5 text-indigo-400 opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1" />
+      <div className="flex items-start justify-between gap-3 relative z-10">
+        <div className="flex items-center gap-3">
+          {Icon && (
+            <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500/20 group-hover:text-indigo-300 transition-colors shrink-0">
+              <Icon className="w-4 h-4" />
+            </div>
+          )}
+          <span className="text-xs font-black tracking-wider uppercase text-slate-200 group-hover:text-white transition-colors">
+            {label}
+          </span>
+        </div>
+        <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
       </div>
-      <span className="text-[8px] text-slate-500 font-black uppercase tracking-widest mt-1 block">{meta}</span>
+      <span className="text-[9px] font-mono font-bold text-slate-400 group-hover:text-slate-300 uppercase tracking-widest block pl-0.5 relative z-10">
+        {meta}
+      </span>
+      {/* Subtle hover gradient glow */}
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-transparent to-indigo-500/[0.05] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
     </a>
   );
 }
