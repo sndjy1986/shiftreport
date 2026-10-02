@@ -338,36 +338,78 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
     return dStr;
   };
 
+  const alignTabularReport = (text: string) => {
+    if (!text) return text;
+    // Normalize Unicode non-breaking spaces (\u00a0) and tabs
+    const cleanText = text.replace(/\u00a0/g, ' ');
+    const rawLines = cleanText.split(/\r?\n/).filter(l => l.trim().length > 0);
+    if (rawLines.length === 0) return text;
+
+    const headerLine = rawLines[0];
+    const hasKnownHeaders = /unit/i.test(headerLine) && /date/i.test(headerLine) && /time/i.test(headerLine);
+
+    if (hasKnownHeaders) {
+      const colUnit = headerLine.search(/unit/i);
+      const colDate = headerLine.search(/date/i);
+      const colTime = headerLine.search(/time/i);
+      const colCall = headerLine.search(/call[- ]?sign/i);
+      const col1042 = headerLine.search(/10[- ]?42/i);
+
+      if (colUnit !== -1 && colDate !== -1 && colTime !== -1) {
+        // Calculate slice boundaries midway between each header label
+        const bound1 = Math.floor((colUnit + colDate) / 2);
+        const bound2 = Math.floor((colDate + colTime) / 2);
+        const bound3 = colCall !== -1 ? Math.floor((colTime + colCall) / 2) : colTime + 14;
+        const bound4 = col1042 !== -1 ? Math.floor(((colCall !== -1 ? colCall : colTime + 14) + col1042) / 2) : bound3 + 18;
+
+        const parsedRows = rawLines.map(line => {
+          const u = line.slice(0, bound1).trim();
+          const d = line.slice(bound1, bound2).trim();
+          const t = line.slice(bound2, bound3).trim();
+          const c = line.slice(bound3, bound4).trim();
+          const e = line.slice(bound4).trim();
+          return [u, d, t, c, e];
+        });
+
+        const colWidths = [0, 0, 0, 0, 0];
+        parsedRows.forEach(row => {
+          row.forEach((cell, i) => {
+            if (cell.length > colWidths[i]) colWidths[i] = cell.length;
+          });
+        });
+
+        return parsedRows.map(row => {
+          return (
+            row[0].padEnd(colWidths[0] + 4, ' ') +
+            row[1].padEnd(colWidths[1] + 4, ' ') +
+            row[2].padEnd(colWidths[2] + 4, ' ') +
+            row[3].padEnd(colWidths[3] + 4, ' ') +
+            row[4]
+          ).trimEnd();
+        }).join('\n');
+      }
+    }
+
+    // General fallback for tab or multi-space separated tabular text
+    const rows = rawLines.map(line => line.split(/\t|\s{2,}/).map(cell => cell.trim()).filter(Boolean));
+    if (rows.length < 2) return text;
+    const maxCols = Math.max(...rows.map(r => r.length));
+    const colWidths = Array(maxCols).fill(0);
+    rows.forEach(row => {
+      row.forEach((cell, i) => {
+        if (cell.length > colWidths[i]) colWidths[i] = cell.length;
+      });
+    });
+
+    return rows.map(row => {
+      return row.map((cell, i) => (i === row.length - 1 ? cell : cell.padEnd(colWidths[i] + 4, ' '))).join('').trimEnd();
+    }).join('\n');
+  };
+
   const buildReport = () => {
     const reportParts: string[] = [];
 
-    const formatTabularData = (text: string) => {
-      const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
-      if (lines.length < 2) return text;
-      const rows = lines.map(line => line.split(/\t|\s{2,}/).map(cell => cell.trim()));
-      const maxCols = Math.max(...rows.map(r => r.length));
-      const colWidths: number[] = [];
-      for (let i = 0; i < maxCols; i++) {
-        let maxW = 0;
-        rows.forEach(row => {
-          const val = row[i] || "";
-          if (val.length > maxW) maxW = val.length;
-        });
-        colWidths[i] = maxW;
-      }
-      return rows.map(row => {
-        let lineStr = "";
-        for (let i = 0; i < maxCols; i++) {
-          const cell = row[i] || "";
-          if (i === maxCols - 1) {
-            lineStr += cell;
-          } else {
-            lineStr += cell.padEnd(colWidths[i] + 3, ' ');
-          }
-        }
-        return lineStr;
-      }).join('\n');
-    };
+    const formatTabularData = (text: string) => alignTabularReport(text);
 
     const addSection = (title: string, content: string | string[], isTabular: boolean = false) => {
       const header = `**${title}**`;
@@ -842,23 +884,47 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                     placeholder="ENTER OTHER ISSUES..."
                   />
                   <div className="pt-4 mt-4 border-t border-white/10">
-                    <label 
-                      style={{ 
-                        color: labelStyle.color, 
-                        fontSize: `${Math.max(8, labelStyle.fontSize - 1)}px` 
-                      }}
-                      className={`${labelStyle.fontWeight} ${labelStyle.textTransform} tracking-wider block mb-3 select-none transition-all`}
-                    >
-                      Buffer Data / Roster Sync Notes
-                    </label>
+                    <div className="flex items-center justify-between mb-3">
+                      <label 
+                        style={{ 
+                          color: labelStyle.color, 
+                          fontSize: `${Math.max(8, labelStyle.fontSize - 1)}px` 
+                        }}
+                        className={`${labelStyle.fontWeight} ${labelStyle.textTransform} tracking-wider select-none transition-all`}
+                      >
+                        Buffer Data / Roster Sync Notes (Auto-Aligned Table)
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!data.pasteNotes) return;
+                          const aligned = alignTabularReport(data.pasteNotes);
+                          setData(p => ({ ...p, pasteNotes: aligned }));
+                          setShowToast("Roster table columns aligned cleanly!");
+                        }}
+                        className="px-3 py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-400/30 text-indigo-300 text-[10px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer shadow active:scale-95 flex items-center gap-1.5"
+                        title="Re-align columns into clean fixed-width rows"
+                      >
+                        <span>⚡ Align Columns</span>
+                      </button>
+                    </div>
                     <textarea 
                       name="pasteNotes"
                       value={data.pasteNotes} 
-                      onChange={handleChange}
+                      onChange={handleChange} 
                       onKeyDown={handleTextareaTab}
-                      rows={5}
-                      className="w-full bg-[#0b0f17]/50 rounded border border-white/10 p-4 text-sm font-sans text-white focus:outline-none focus:border-indigo-500/50 resize-y"
-                      placeholder="ENTER BUFFER DATA..."
+                      onBlur={() => {
+                        // Automatically align when user clicks or tabs out if it looks like a table
+                        if (data.pasteNotes && /unit/i.test(data.pasteNotes) && /time/i.test(data.pasteNotes)) {
+                          const aligned = alignTabularReport(data.pasteNotes);
+                          if (aligned !== data.pasteNotes) {
+                            setData(p => ({ ...p, pasteNotes: aligned }));
+                          }
+                        }
+                      }}
+                      rows={8}
+                      className="w-full bg-[#0b0f17]/80 rounded border border-white/15 p-4 text-xs font-mono text-emerald-300 focus:outline-none focus:border-indigo-500/50 resize-y whitespace-pre overflow-x-auto leading-relaxed shadow-inner"
+                      placeholder="Paste Roster / Time Up table here (columns will stay aligned in monospaced grid)..."
                     />
                   </div>
                 </section>
