@@ -341,58 +341,88 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
   const alignTabularReport = (text: string) => {
     if (!text) return text;
     // Normalize Unicode non-breaking spaces (\u00a0) and tabs
-    const cleanText = text.replace(/\u00a0/g, ' ');
-    const rawLines = cleanText.split(/\r?\n/).filter(l => l.trim().length > 0);
+    const rawLines = text.split(/\r?\n/).map(l => l.replace(/\u00a0/g, ' ').trim()).filter(Boolean);
     if (rawLines.length === 0) return text;
 
-    const headerLine = rawLines[0];
-    const hasKnownHeaders = /unit/i.test(headerLine) && /date/i.test(headerLine) && /time/i.test(headerLine);
+    const rows: string[][] = [];
 
-    if (hasKnownHeaders) {
-      const colUnit = headerLine.search(/unit/i);
-      const colDate = headerLine.search(/date/i);
-      const colTime = headerLine.search(/time/i);
-      const colCall = headerLine.search(/call[- ]?sign/i);
-      const col1042 = headerLine.search(/10[- ]?42/i);
-
-      if (colUnit !== -1 && colDate !== -1 && colTime !== -1) {
-        // Calculate slice boundaries midway between each header label
-        const bound1 = Math.floor((colUnit + colDate) / 2);
-        const bound2 = Math.floor((colDate + colTime) / 2);
-        const bound3 = colCall !== -1 ? Math.floor((colTime + colCall) / 2) : colTime + 14;
-        const bound4 = col1042 !== -1 ? Math.floor(((colCall !== -1 ? colCall : colTime + 14) + col1042) / 2) : bound3 + 18;
-
-        const parsedRows = rawLines.map(line => {
-          const u = line.slice(0, bound1).trim();
-          const d = line.slice(bound1, bound2).trim();
-          const t = line.slice(bound2, bound3).trim();
-          const c = line.slice(bound3, bound4).trim();
-          const e = line.slice(bound4).trim();
-          return [u, d, t, c, e];
-        });
-
-        const colWidths = [0, 0, 0, 0, 0];
-        parsedRows.forEach(row => {
-          row.forEach((cell, i) => {
-            if (cell.length > colWidths[i]) colWidths[i] = cell.length;
-          });
-        });
-
-        return parsedRows.map(row => {
-          return (
-            row[0].padEnd(colWidths[0] + 4, ' ') +
-            row[1].padEnd(colWidths[1] + 4, ' ') +
-            row[2].padEnd(colWidths[2] + 4, ' ') +
-            row[3].padEnd(colWidths[3] + 4, ' ') +
-            row[4]
-          ).trimEnd();
-        }).join('\n');
+    for (const raw of rawLines) {
+      if (/^unit\b/i.test(raw)) {
+        rows.push(["Unit", "Date", "Time", "Call-Sign", "10-42"]);
+        continue;
       }
+
+      let line = raw;
+
+      // 1. Repair broken split prefixes: "MED-    0" -> "MED-0", "ALS-    02" -> "ALS-02"
+      line = line.replace(/\b(MED|ALS|QRV|RESCUE)-?\s+(\d+)\b/gi, "$1-$2");
+      // 2. Repair split numbers in units: "MED1    2" -> "MED12", "MED1    3" -> "MED13", "MED1    20" -> "MED120"
+      line = line.replace(/\bMED1\s+(\d+)\b/gi, "MED1$1");
+      // 3. Repair fused "MED12010/2" -> "MED120 10/2"
+      line = line.replace(/\b(MED\d+|ALS-\d+|A-\d+)(0?[1-9]|1[0-2])\/(\d{1,2})\b/gi, "$1 $2/$3");
+      // 4. Repair fractured times: "6       :54" -> "6:54", "7:      10" -> "7:10", "6:4     3" -> "6:43"
+      line = line.replace(/(\d{1,2})\s*:\s*(\d{2})/g, "$1:$2");
+      line = line.replace(/(\d{1,2}):(\d)\s+(\d)/g, "$1:$2$3");
+      // 5. Repair split name initials: "T.    HORNSBY" -> "T. HORNSBY", "I.    SETTLES" -> "I. SETTLES"
+      line = line.replace(/\b([A-Z]\.)\s+([A-Z]+)\b/g, "$1 $2");
+      // 6. Repair split EMS signs: "EMS    -28" -> "EMS-28"
+      line = line.replace(/\b(EMS)\s+-?(\d+)\b/g, "$1-$2");
+
+      // Extract Unit (first non-whitespace token)
+      const unitMatch = line.match(/^(\S+)/);
+      if (!unitMatch) {
+        rows.push([line]);
+        continue;
+      }
+      const unit = unitMatch[1];
+      let rest = line.slice(unit.length).trim();
+
+      // Extract Date (\d{1,2}\/\d{1,2})
+      const dateMatch = rest.match(/^(\d{1,2}\/\d{1,2}(?:\/\d{2,4})?)/);
+      if (!dateMatch) {
+        const fallbackCells = line.split(/\s{2,}|\t/).map(s => s.trim()).filter(Boolean);
+        rows.push(fallbackCells);
+        continue;
+      }
+      const date = dateMatch[1];
+      rest = rest.slice(date.length).trim();
+
+      // Extract Time (\d{1,2}:\d{2})
+      const timeMatch = rest.match(/^(\d{1,2}:\d{2})/);
+      if (!timeMatch) {
+        rows.push([unit, date, rest]);
+        continue;
+      }
+      const time = timeMatch[1];
+      rest = rest.slice(time.length).trim();
+
+      // In the rest of the string, fix fractured call-signs like "C-1    0" -> "C-10", "A-1    2" -> "A-12"
+      // ensuring the trailing digit is NOT followed by a colon
+      rest = rest.replace(/\b([A-Z])-(\d)\s+(\d+)(?!:)\b/g, "$1-$2$3");
+
+      // Extract 10-42 Time (at end) and Call-Sign (in middle)
+      const end1042Match = rest.match(/(?:^|\s+)(\d{1,2}:\d{2})$/);
+      let time1042 = "";
+      let callSign = "";
+
+      if (end1042Match) {
+        time1042 = end1042Match[1];
+        callSign = rest.slice(0, rest.length - end1042Match[0].length).trim();
+      } else {
+        if (/^\d{1,2}:\d{2}$/.test(rest.trim())) {
+          time1042 = rest.trim();
+          callSign = "";
+        } else {
+          callSign = rest.trim();
+        }
+      }
+
+      rows.push([unit, date, time, callSign, time1042]);
     }
 
-    // General fallback for tab or multi-space separated tabular text
-    const rows = rawLines.map(line => line.split(/\t|\s{2,}/).map(cell => cell.trim()).filter(Boolean));
     if (rows.length < 2) return text;
+
+    // Calculate maximum column widths
     const maxCols = Math.max(...rows.map(r => r.length));
     const colWidths = Array(maxCols).fill(0);
     rows.forEach(row => {
@@ -402,7 +432,10 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
     });
 
     return rows.map(row => {
-      return row.map((cell, i) => (i === row.length - 1 ? cell : cell.padEnd(colWidths[i] + 4, ' '))).join('').trimEnd();
+      return row.map((cell, i) => {
+        if (i === row.length - 1) return cell;
+        return cell.padEnd(colWidths[i] + 4, " ");
+      }).join("").trimEnd();
     }).join('\n');
   };
 
