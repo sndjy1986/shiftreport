@@ -37,7 +37,8 @@ import {
   Video,
   FileSpreadsheet,
   AlertTriangle,
-  ExternalLink
+  ExternalLink,
+  Timer
 } from 'lucide-react';
 import { ThemeSelectorButton } from '../components/centralhub/ThemeSelector';
 import { Modal } from '../components/centralhub/Modal';
@@ -1076,6 +1077,13 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <ExternalLinkItem 
+              href="#/timers" 
+              label="Incident Timers" 
+              meta="20m / 30m Visual Watch" 
+              icon={Timer}
+              isInternal={true}
+            />
+            <ExternalLinkItem 
               href="https://distancechecker.sndjy.us/" 
               label="Distance Checker" 
               meta="Distance To Call" 
@@ -1164,18 +1172,20 @@ function ExternalLinkItem({
   href, 
   label, 
   meta, 
-  icon: Icon 
+  icon: Icon,
+  isInternal = false
 }: { 
   href: string; 
   label: string; 
   meta: string; 
   icon?: React.ElementType;
+  isInternal?: boolean;
 }) {
   return (
     <a 
       href={href} 
-      target="_blank" 
-      rel="noopener noreferrer"
+      target={isInternal ? "_self" : "_blank"} 
+      rel={isInternal ? undefined : "noopener noreferrer"}
       className="p-4 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] backdrop-blur-md border border-white/10 hover:border-emerald-400/40 group transition-all duration-200 flex flex-col justify-between gap-3 shadow-md hover:shadow-xl hover:shadow-black/50 hover:-translate-y-0.5 cursor-pointer relative overflow-hidden"
     >
       <div className="flex items-start justify-between gap-3 relative z-10">
