@@ -489,7 +489,7 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
       `County QRV: ${data.truckCountyQRV || "None"}`
     ]);
 
-    addSection("Late Trucks", data.lateTrucks);
+    addSection("Late Trucks - (Truck, Uptime, Scheduled time) (Reason if avail)", data.lateTrucks);
     addSection("Out of Chute", data.outOfChute);
     addSection("Other Issues", data.issues);
 
@@ -844,7 +844,7 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                   </div>
                   <div className="space-y-5">
                     <div className="flex flex-col gap-2.5 group/field">
-                      <div className="flex items-center gap-2 pl-3">
+                      <div className="flex items-center gap-2 pl-3 flex-wrap">
                         <AlertCircle style={{ color: labelStyle.color }} className="w-3.5 h-3.5 opacity-80 shrink-0" />
                         <label 
                           style={{ 
@@ -855,6 +855,9 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                         >
                           Late Trucks
                         </label>
+                        <span className="text-[10px] text-slate-400 font-mono tracking-tight font-medium">
+                          (Truck, Uptime, Scheduled time) (Reason if avail)
+                        </span>
                       </div>
                       <textarea 
                         name="lateTrucks" 
@@ -863,7 +866,7 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                         onKeyDown={handleTextareaTab}
                         rows={3} 
                         className="w-full tactical-input p-4 text-xs font-mono text-white"
-                        placeholder="UNIT / TIME / REASON..." 
+                        placeholder="TRUCK / UPTIME / SCHEDULED TIME / REASON..." 
                       />
                     </div>
                     <div className="flex flex-col gap-2.5 group/field">
