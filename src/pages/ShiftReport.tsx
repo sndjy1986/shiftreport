@@ -490,11 +490,13 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
       `County QRV: ${data.truckCountyQRV || "None"}`
     ]);
 
-    addSection("Shift Duties & Checklist", [
-      `Floors Vacuumed: ${data.floorsVacuumed || "NO"}`,
-      `Picture Sent: ${data.pictureSent || "NO"}`,
-      `Computers Restarted: ${data.computersRestarted || "NO"}`
-    ]);
+    if (data.reportType === "End of Shift Report") {
+      addSection("Shift Duties & Checklist", [
+        `Floors Vacuumed: ${data.floorsVacuumed || "NO"}`,
+        `Picture Sent: ${data.pictureSent || "NO"}`,
+        `Computers Restarted: ${data.computersRestarted || "NO"}`
+      ]);
+    }
 
     addSection("Late Trucks - (Truck, Uptime, Scheduled time) (Reason if avail)", data.lateTrucks);
     addSection("Out of Chute", data.outOfChute);
@@ -903,53 +905,6 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                 </div>
               </div>
 
-              {/* Shift Duties & Station Checklist Box */}
-              <div className="tactical-card p-6 sm:p-8 space-y-6 group">
-                <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                  <h2 
-                    style={{ color: labelStyle.color }}
-                    className="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 transition-colors"
-                  >
-                    <CheckSquare className="w-3.5 h-3.5" /> Shift Duties & Station Checklist
-                  </h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                  <Field label="Floors Vacuumed" icon={CheckSquare}>
-                    <select 
-                      name="floorsVacuumed" 
-                      value={data.floorsVacuumed || "NO"} 
-                      onChange={handleChange} 
-                      className="bg-[#0b0f17] text-white cursor-pointer font-bold"
-                    >
-                      <option value="YES" className="bg-[#0b0f17] text-emerald-400">YES</option>
-                      <option value="NO" className="bg-[#0b0f17] text-rose-400">NO</option>
-                    </select>
-                  </Field>
-                  <Field label="Picture Sent" icon={CheckSquare}>
-                    <select 
-                      name="pictureSent" 
-                      value={data.pictureSent || "NO"} 
-                      onChange={handleChange} 
-                      className="bg-[#0b0f17] text-white cursor-pointer font-bold"
-                    >
-                      <option value="YES" className="bg-[#0b0f17] text-emerald-400">YES</option>
-                      <option value="NO" className="bg-[#0b0f17] text-rose-400">NO</option>
-                    </select>
-                  </Field>
-                  <Field label="Computers Restarted" icon={CheckSquare}>
-                    <select 
-                      name="computersRestarted" 
-                      value={data.computersRestarted || "NO"} 
-                      onChange={handleChange} 
-                      className="bg-[#0b0f17] text-white cursor-pointer font-bold"
-                    >
-                      <option value="YES" className="bg-[#0b0f17] text-emerald-400">YES</option>
-                      <option value="NO" className="bg-[#0b0f17] text-rose-400">NO</option>
-                    </select>
-                  </Field>
-                </div>
-              </div>
-
               {/* Row 3: Operational Log & Buffer Sync */}
               {terminalUser?.role?.toLowerCase() !== 'dispatcher' ? (
                 <section className="tactical-card p-6 sm:p-8 space-y-6 group">
@@ -1166,6 +1121,61 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                   </div>
                 </section>
               </div>
+
+              {/* Shift Duties & Station Checklist Box (End of Shift Only) */}
+              {data.reportType === "End of Shift Report" && (
+                <div className="tactical-card p-6 sm:p-8 space-y-6 group border border-indigo-500/30 bg-gradient-to-br from-indigo-950/20 via-[#0b0f17] to-black/60 shadow-xl shadow-indigo-950/20 animate-in fade-in duration-300">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                    <div className="space-y-1">
+                      <h2 
+                        style={{ color: labelStyle.color }}
+                        className="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3 transition-colors"
+                      >
+                        <CheckSquare className="w-3.5 h-3.5 text-indigo-400" /> End of Shift Duties Checklist
+                      </h2>
+                      <p className="text-[10px] text-slate-400 font-medium">Verify station turnover duties before submitting end-of-shift debrief.</p>
+                    </div>
+                    <span className="px-2.5 py-1 text-[9px] font-black tracking-widest uppercase bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 rounded-lg">
+                      Required
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                    <Field label="Floors Vacuumed" icon={CheckSquare}>
+                      <select 
+                        name="floorsVacuumed" 
+                        value={data.floorsVacuumed || "NO"} 
+                        onChange={handleChange} 
+                        className="bg-[#0b0f17] text-white cursor-pointer font-bold"
+                      >
+                        <option value="YES" className="bg-[#0b0f17] text-emerald-400">YES</option>
+                        <option value="NO" className="bg-[#0b0f17] text-rose-400">NO</option>
+                      </select>
+                    </Field>
+                    <Field label="Picture Sent" icon={CheckSquare}>
+                      <select 
+                        name="pictureSent" 
+                        value={data.pictureSent || "NO"} 
+                        onChange={handleChange} 
+                        className="bg-[#0b0f17] text-white cursor-pointer font-bold"
+                      >
+                        <option value="YES" className="bg-[#0b0f17] text-emerald-400">YES</option>
+                        <option value="NO" className="bg-[#0b0f17] text-rose-400">NO</option>
+                      </select>
+                    </Field>
+                    <Field label="Computers Restarted" icon={CheckSquare}>
+                      <select 
+                        name="computersRestarted" 
+                        value={data.computersRestarted || "NO"} 
+                        onChange={handleChange} 
+                        className="bg-[#0b0f17] text-white cursor-pointer font-bold"
+                      >
+                        <option value="YES" className="bg-[#0b0f17] text-emerald-400">YES</option>
+                        <option value="NO" className="bg-[#0b0f17] text-rose-400">NO</option>
+                      </select>
+                    </Field>
+                  </div>
+                </div>
+              )}
 
               {/* Actions Footer Bar */}
               <div className="tactical-card p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl relative overflow-hidden">
