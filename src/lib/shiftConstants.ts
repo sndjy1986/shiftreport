@@ -91,6 +91,7 @@ export type ShiftReportData = {
   outOfChute: string;
   issues: string;
   pasteNotes: string;
+  rosterImage?: string;
   otherEvents: string;
   dispatch1: { cfs: string; code: string; units: string };
   dispatch2: { cfs: string; code: string; units: string };
@@ -135,6 +136,7 @@ export const INITIAL_DATA: ShiftReportData = {
   outOfChute: "",
   issues: "",
   pasteNotes: "",
+  rosterImage: "",
   otherEvents: "",
   dispatch1: { cfs: '', code: '', units: '' },
   dispatch2: { cfs: '', code: '', units: '' },

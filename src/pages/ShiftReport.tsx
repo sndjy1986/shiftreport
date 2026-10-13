@@ -39,7 +39,11 @@ import {
   AlertTriangle,
   ExternalLink,
   Timer,
-  CheckSquare
+  CheckSquare,
+  Image,
+  Upload,
+  Copy,
+  Scissors
 } from 'lucide-react';
 import { ThemeSelectorButton } from '../components/centralhub/ThemeSelector';
 import { Modal } from '../components/centralhub/Modal';
@@ -142,14 +146,61 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
   const frDiff1 = getFrDiff(data.fr911_1 || INITIAL_DATA.fr911_1);
   const frDiff2 = getFrDiff(data.fr911_2 || INITIAL_DATA.fr911_2);
   
-  let frAverageDiff: number | null = null;
-  if (frDiff1 !== null && frDiff2 !== null) {
-    frAverageDiff = (frDiff1 + frDiff2) / 2;
-  } else if (frDiff1 !== null) {
-    frAverageDiff = frDiff1;
-  } else if (frDiff2 !== null) {
-    frAverageDiff = frDiff2;
-  }
+  const frAverageDiff = (frDiff1 !== null && frDiff2 !== null) 
+    ? (frDiff1 + frDiff2) / 2 
+    : (frDiff1 !== null ? frDiff1 : frDiff2);
+
+  const handleRosterPaste = useCallback((e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const file = items[i].getAsFile();
+        if (file) {
+          e.preventDefault();
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const base64 = event.target?.result as string;
+            setData(prev => ({ ...prev, rosterImage: base64 }));
+            setShowToast("Roster screenshot / snip saved successfully!");
+          };
+          reader.readAsDataURL(file);
+          return;
+        }
+      }
+    }
+  }, []);
+
+  const handleRosterFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        setData(prev => ({ ...prev, rosterImage: base64 }));
+        setShowToast("Roster screenshot / snip uploaded!");
+      };
+      reader.readAsDataURL(file);
+    }
+  }, []);
+
+  const copyRosterImageToClipboard = useCallback(async () => {
+    if (!data.rosterImage) return;
+    try {
+      const res = await fetch(data.rosterImage);
+      const blob = await res.blob();
+      if (navigator.clipboard && window.ClipboardItem) {
+        const item = new ClipboardItem({ [blob.type]: blob });
+        await navigator.clipboard.write([item]);
+        setShowToast("Snip copied to clipboard! Paste directly into Outlook/Email.");
+      } else {
+        setShowToast("Clipboard item not supported in this browser");
+      }
+    } catch (err) {
+      console.error("Failed to copy image:", err);
+      setShowToast("Failed to copy image to clipboard");
+    }
+  }, [data.rosterImage]);
 
   useEffect(() => {
     const handleStyleUpdate = (e: any) => {
@@ -504,6 +555,8 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
 
     if (data.pasteNotes) {
       addSection("Roster/Time Up", data.pasteNotes, true);
+    } else if (data.rosterImage) {
+      addSection("Roster/Time Up", "[Full Roster Snip Image attached - paste from clipboard]");
     }
 
     if (data.otherEvents) {
@@ -928,36 +981,127 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                     className="w-full bg-[#0b0f17]/50 rounded border border-white/10 p-4 text-sm font-sans text-white focus:outline-none focus:border-indigo-500/50 resize-y"
                     placeholder="ENTER OTHER ISSUES..."
                   />
-                  <div className="pt-4 mt-4 border-t border-white/10">
-                    <div className="flex items-center justify-between mb-3">
-                      <label 
-                        style={{ 
-                          color: labelStyle.color, 
-                          fontSize: `${Math.max(8, labelStyle.fontSize - 1)}px` 
-                        }}
-                        className={`${labelStyle.fontWeight} ${labelStyle.textTransform} tracking-wider select-none transition-all`}
-                      >
-                        Buffer Data / Roster Sync Notes (Auto-Aligned Table)
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!data.pasteNotes) return;
-                          const aligned = alignTabularReport(data.pasteNotes);
-                          setData(p => ({ ...p, pasteNotes: aligned }));
-                          setShowToast("Roster table columns aligned cleanly!");
-                        }}
-                        className="px-3 py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-400/30 text-indigo-300 text-[10px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer shadow active:scale-95 flex items-center gap-1.5"
-                        title="Re-align columns into clean fixed-width rows"
-                      >
-                        <span>⚡ Align Columns</span>
-                      </button>
+                  <div className="pt-4 mt-4 border-t border-white/10 space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
+                      <div className="flex items-center gap-2">
+                        <label 
+                          style={{ 
+                            color: labelStyle.color, 
+                            fontSize: `${Math.max(8, labelStyle.fontSize - 1)}px` 
+                          }}
+                          className={`${labelStyle.fontWeight} ${labelStyle.textTransform} tracking-wider select-none transition-all flex items-center gap-2`}
+                        >
+                          <Scissors className="w-3.5 h-3.5 text-indigo-400" />
+                          Roster / Time Up (Paste Table or Paste Snip It)
+                        </label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <label
+                          htmlFor="roster-image-upload"
+                          className="px-3 py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-400/30 text-indigo-300 text-[10px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer shadow active:scale-95 flex items-center gap-1.5 select-none"
+                          title="Upload screenshot from file"
+                        >
+                          <Upload className="w-3 h-3" />
+                          <span>Upload Snip</span>
+                        </label>
+                        <input 
+                          id="roster-image-upload" 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={handleRosterFileSelect} 
+                          className="hidden" 
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!data.pasteNotes) return;
+                            const aligned = alignTabularReport(data.pasteNotes);
+                            setData(p => ({ ...p, pasteNotes: aligned }));
+                            setShowToast("Roster table columns aligned cleanly!");
+                          }}
+                          className="px-3 py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-400/30 text-indigo-300 text-[10px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer shadow active:scale-95 flex items-center gap-1.5"
+                          title="Re-align columns into clean fixed-width rows"
+                        >
+                          <span>⚡ Align Columns</span>
+                        </button>
+                      </div>
                     </div>
+
+                    {/* Screenshot / Snip It Preview Box if attached */}
+                    {data.rosterImage ? (
+                      <div className="relative rounded-xl border border-indigo-500/30 bg-black/60 p-4 shadow-xl overflow-hidden group/img">
+                        <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+                          <div className="flex items-center gap-2 text-indigo-300 text-xs font-bold">
+                            <Image className="w-4 h-4 text-emerald-400" />
+                            <span>Attached Snip It / Roster Image</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={copyRosterImageToClipboard}
+                              className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow transition-all active:scale-95 cursor-pointer"
+                              title="Copy image to clipboard so you can paste into Outlook"
+                            >
+                              <Copy className="w-3 h-3" />
+                              <span>Copy Image</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setData(p => ({ ...p, rosterImage: "" }));
+                                setShowToast("Roster screenshot removed");
+                              }}
+                              className="px-2.5 py-1 rounded bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/30 text-rose-300 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow transition-all active:scale-95 cursor-pointer"
+                              title="Remove screenshot"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              <span>Remove</span>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="max-h-[500px] overflow-auto rounded border border-white/10 bg-slate-950/80 flex items-center justify-center p-2">
+                          <img 
+                            src={data.rosterImage} 
+                            alt="Roster Snip Preview" 
+                            className="max-w-full object-contain rounded shadow-md" 
+                          />
+                        </div>
+                        <p className="mt-2 text-[10px] text-slate-400 italic">
+                          💡 You can click <strong>Copy Image</strong> above or paste another snip directly (<kbd className="px-1 py-0.5 bg-black/60 border border-white/20 rounded font-mono text-indigo-300">Ctrl+V</kbd>) anytime.
+                        </p>
+                      </div>
+                    ) : (
+                      <div 
+                        onPaste={handleRosterPaste}
+                        tabIndex={0}
+                        className="p-3 rounded-lg border border-dashed border-indigo-400/30 bg-indigo-950/10 hover:bg-indigo-950/20 transition-all flex items-center justify-between gap-4 cursor-pointer focus:outline-none focus:border-indigo-400 shadow-inner"
+                        onClick={() => document.getElementById('roster-image-upload')?.click()}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-300 border border-indigo-500/30">
+                            <Scissors className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-white tracking-wide">
+                              Have a "Snip It" of the full list?
+                            </p>
+                            <p className="text-[10px] text-slate-400">
+                              Click here and press <kbd className="px-1 py-0.5 bg-black/60 border border-white/20 rounded font-mono text-indigo-300">Ctrl+V</kbd> to paste screenshot, or click to upload.
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 rounded-md">
+                          Paste Snip
+                        </span>
+                      </div>
+                    )}
+
                     <textarea 
                       name="pasteNotes"
                       value={data.pasteNotes} 
                       onChange={handleChange} 
                       onKeyDown={handleTextareaTab}
+                      onPaste={handleRosterPaste}
                       onBlur={() => {
                         // Automatically align when user clicks or tabs out if it looks like a table
                         if (data.pasteNotes && /unit/i.test(data.pasteNotes) && /time/i.test(data.pasteNotes)) {
@@ -967,9 +1111,9 @@ export default function ShiftReport({ isModal, onClose }: { isModal?: boolean; o
                           }
                         }
                       }}
-                      rows={8}
+                      rows={data.rosterImage ? 4 : 8}
                       className="w-full bg-[#0b0f17]/80 rounded border border-white/15 p-4 text-xs font-mono text-emerald-300 focus:outline-none focus:border-indigo-500/50 resize-y whitespace-pre overflow-x-auto leading-relaxed shadow-inner"
-                      placeholder="Paste Roster / Time Up table here (columns will stay aligned in monospaced grid)..."
+                      placeholder={data.rosterImage ? "Optional extra notes / text alongside your snip..." : "Paste Roster / Time Up table text OR press Ctrl+V here with your Snip It screenshot..."}
                     />
                   </div>
                 </section>
